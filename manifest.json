@@ -1,0 +1,32 @@
+{
+  "name": "Deen - Islamic Hub",
+  "short_name": "Deen",
+  "description": "নামাজের সময়সূচি, কুরআন, হাদিস ও দোয়া — একসাথে একটি অ্যাপে",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#08150f",
+  "theme_color": "#0d2019",
+  "lang": "bn",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

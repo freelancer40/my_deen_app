@@ -1,0 +1,10 @@
+{
+  "name": "deen-islamic-hub",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Deen - Islamic Hub — নামাজের ওয়াক্তের Web Push নোটিফিকেশনের সার্ভার ফাংশন",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "web-push": "^3.6.7"
+  }
+}

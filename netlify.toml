@@ -1,0 +1,17 @@
+[build]
+  publish = "."
+  command = "npm install"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# প্রতি ৫ মিনিটে চলে (প্রতি মিনিটে চালালে ফ্রি প্ল্যানের ক্রেডিট দ্রুত ফুরিয়ে যায়) —
+# ফলে নোটিফিকেশন ওয়াক্ত শুরুর সর্বোচ্চ ৪-৫ মিনিট পরে আসতে পারে।
+[functions."check-waqt"]
+  schedule = "*/5 * * * *"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
