@@ -1,3 +1,18 @@
 [build]
-  functions = "netlify/functions"
+  publish = "."
+  command = "npm install"
 
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# প্রতি মিনিটে চলে — কিন্তু ভেতরে prayer-times-cache ব্যবহার করার কারণে দিনে
+# শহর-প্রতি মাত্র একবারই Aladhan API কল হয়, তাই প্রতি মিনিটে চললেও কম্পিউট
+# সময়/ক্রেডিট বাড়ে না (প্রতিটা রান পড়ে মাত্র ক্যাশ থেকে)।
+[functions."check-waqt"]
+  schedule = "* * * * *"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"

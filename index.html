@@ -319,7 +319,8 @@
   .mushaf-ayah-num{
     display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; margin:0 2px;
     border-radius:50%; background:#f0e6c8; color:var(--q-gold-dk); border:1px solid var(--q-tan-line);
-    font-size:0.85rem; font-family:inherit; cursor:pointer; vertical-align:middle;
+    font-size:0.85rem; cursor:pointer; vertical-align:middle;
+    font-family:'Noto Naskh Arabic','Traditional Arabic',serif; /* সংখ্যাটা যেন সবসময় দেখা যায় — মুসহাফ ফন্টে Arabic-Indic ডিজিট নাও থাকতে পারে */
   }
   .mushaf-ayah-num.bm-on{background:var(--q-gold); color:#3a2a06; border-color:var(--q-gold-dk);}
   .mushaf-nav{display:flex; gap:10px; padding:0 14px 18px;}
@@ -328,6 +329,35 @@
     font-family:inherit; font-size:0.85rem; font-weight:700; cursor:pointer;
   }
   .mushaf-nav-btn:active{background:var(--q-tan);}
+  .mushaf-surah-head{
+    margin:22px 0 14px; text-align:center; color:var(--q-gold-dk); font-weight:700; font-size:1rem;
+    border-top:1px dashed var(--q-tan-line); padding-top:16px;
+  }
+  .mushaf-surah-head:first-child{border-top:none; margin-top:0; padding-top:0;}
+  .mushaf-page-meta{margin:0 14px 6px; text-align:center; color:var(--q-txt-dim); font-size:0.76rem;}
+
+  /* ---------- মুসহাফ: সূরা/পারা/পৃষ্ঠা ট্যাব ---------- */
+  .qseg{display:flex; gap:8px; padding:0 14px 12px;}
+  .qseg button{
+    flex:1; padding:10px 6px; border-radius:12px; border:1px solid var(--q-tan-line); background:var(--q-card);
+    color:var(--q-txt-dim); font-family:inherit; font-size:0.85rem; font-weight:700; cursor:pointer;
+  }
+  .qseg button.active{background:var(--q-gold); border-color:var(--q-gold-dk); color:#3a2a06;}
+  .juz-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; padding:0 14px 14px;}
+  .juz-card{background:var(--q-card); border:1px solid var(--q-card-line); border-radius:14px; padding:14px; cursor:pointer;}
+  .juz-card:active{background:var(--q-tan);}
+  .juz-card .jc-num{font-weight:700; color:var(--q-gold-dk); font-size:0.92rem;}
+  .juz-card .jc-sub{font-size:0.72rem; color:var(--q-txt-dim); margin-top:4px;}
+  .page-jump-wrap{padding:0 14px 8px; display:flex; gap:8px;}
+  .page-jump-wrap input{
+    flex:1; background:var(--q-card); border:1px solid var(--q-card-line); border-radius:12px; padding:12px 14px;
+    color:var(--q-txt); font-family:inherit; font-size:0.95rem;
+  }
+  .page-jump-wrap button{
+    background:var(--q-gold); border:1px solid var(--q-gold-dk); border-radius:12px; padding:0 18px;
+    color:#3a2a06; font-weight:700; font-family:inherit; cursor:pointer;
+  }
+  .page-jump-hint{margin:0 14px 14px; color:var(--q-txt-dim); font-size:0.76rem;}
 
   /* ---------- বুকমার্ক তালিকা ---------- */
   .bm-row{
@@ -372,7 +402,7 @@
     display:inline-flex; align-items:center; justify-content:center; width:26px;height:26px; border-radius:50%;
     border:1.5px solid var(--q-gold); color:var(--q-gold-dk); font-size:0.72rem; font-weight:700; flex:none; vertical-align:middle;
   }
-  .ayah-end-mark{color:var(--q-gold-dk); font-size:1.05rem; font-weight:700; margin:0 2px;}
+  .ayah-end-mark{color:var(--q-gold-dk); font-size:1.05rem; font-weight:700; margin:0 2px; font-family:'Noto Naskh Arabic','Traditional Arabic',serif;}
   .qr-meaning-toggle{
     display:flex; align-items:center; gap:6px; background:none; border:none; color:var(--q-gold-dk); font-weight:600;
     font-family:'SolaimanLipi','Noto Sans Bengali',sans-serif; font-size:0.85rem; cursor:pointer; padding:2px 0;
@@ -744,7 +774,7 @@
       </div>
     </div>
 
-    <!-- ============ MUSHAF (মুদ্রিত কুরআন) SURAH LIST ============ -->
+    <!-- ============ MUSHAF (মুদ্রিত কুরআন) সূরা/পারা/পৃষ্ঠা তালিকা ============ -->
     <div class="page" id="page-mushaf">
       <div class="qr-topbar">
         <div class="qr-icon-btn" data-back="quran" title="কুরআন মেনু">
@@ -756,14 +786,31 @@
         </div>
       </div>
       <div class="qr-info-card">শুধু তিলাওয়াতের জন্য মুসহাফ মোড <span class="qi-dot"></span> <span class="qi-count">বুকমার্ক-যোগ্য</span></div>
-      <input class="search-box" id="mushafSearch" placeholder="সূরার নাম বা নম্বর দিয়ে খুঁজুন...">
-      <div id="mushafSurahList"><div class="loading">সূরা তালিকা লোড হচ্ছে...</div></div>
+      <div class="qseg" id="mushafModeSeg">
+        <button class="active" data-mode="surah">সূরা</button>
+        <button data-mode="juz">পারা</button>
+        <button data-mode="page">পৃষ্ঠা</button>
+      </div>
+      <div id="mushafModeSurah">
+        <input class="search-box" id="mushafSearch" placeholder="সূরার নাম বা নম্বর দিয়ে খুঁজুন...">
+        <div id="mushafSurahList"><div class="loading">সূরা তালিকা লোড হচ্ছে...</div></div>
+      </div>
+      <div id="mushafModeJuz" style="display:none;">
+        <div class="juz-grid" id="mushafJuzGrid"></div>
+      </div>
+      <div id="mushafModePage" style="display:none;">
+        <div class="page-jump-wrap">
+          <input type="number" id="mushafPageInput" min="1" max="604" placeholder="পৃষ্ঠা নম্বর (১-৬০৪)">
+          <button id="mushafPageGoBtn">যান</button>
+        </div>
+        <div class="page-jump-hint">মুদ্রিত মাদানী মুসহাফের সাধারণ পৃষ্ঠা বিন্যাস অনুযায়ী (মোট ৬০৪ পৃষ্ঠা) — এডিশনভেদে সামান্য পার্থক্য হতে পারে।</div>
+      </div>
     </div>
 
     <!-- ============ MUSHAF READING ============ -->
     <div class="page" id="page-mushafread">
       <div class="qr-topbar">
-        <div class="qr-icon-btn" data-back="mushaf" title="সূরা তালিকা">
+        <div class="qr-icon-btn" data-back="mushaf" title="তালিকায় ফিরুন">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </div>
         <div class="qr-title"><span class="star">✦</span> <span id="mushafHeadTitle">মুদ্রিত কুরআন</span></div>
@@ -771,11 +818,12 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h12a1 1 0 0 1 1 1v19l-7-4-7 4V3a1 1 0 0 1 1-1z"/></svg>
         </div>
       </div>
+      <div class="mushaf-page-meta" id="mushafPageMeta"></div>
       <div class="mushaf-hint">আয়াতের শেষের নম্বর গোল বাটনে চাপ দিয়ে সেই আয়াত বুকমার্ক করুন</div>
       <div id="mushafText"><div class="loading">আয়াত লোড হচ্ছে...</div></div>
       <div class="mushaf-nav">
-        <button class="mushaf-nav-btn" id="mushafPrevBtn">◄ পূর্ববর্তী সূরা</button>
-        <button class="mushaf-nav-btn" id="mushafNextBtn">পরবর্তী সূরা ►</button>
+        <button class="mushaf-nav-btn" id="mushafPrevBtn">◄ পূর্ববর্তী</button>
+        <button class="mushaf-nav-btn" id="mushafNextBtn">পরবর্তী ►</button>
       </div>
     </div>
 
@@ -1427,7 +1475,11 @@ function go(route, opts){
   if(route === 'dua') renderDua();
   if(route === 'prayertimes'){ ptDateOffset = 0; loadPrayerTimesPage(); }
   if(route === 'yearlytimes'){ loadYearlyTimes(ytYear); }
-  if(route === 'mushaf' && !window._mushafListLoaded) loadMushafSurahList();
+  if(route === 'mushaf'){
+    if(!window._mushafListLoaded) loadMushafSurahList();
+    if(!window._mushafJuzGridBuilt) renderMushafJuzGrid();
+    setMushafMode(window._mushafActiveMode || 'surah');
+  }
   if(route === 'tafsir' && !window._tafsirListLoaded) loadTafsirSurahList();
   if(route === 'bookmarks') renderBookmarksList();
   if(!opts.skipHistory && !opts.fromPopstate){
@@ -1443,7 +1495,9 @@ window.addEventListener('popstate', function(e){
   if(st.route === 'surah' && st.num){
     openSurah(st.num, {fromPopstate:true});
   }else if(st.route === 'mushafread' && st.num){
-    openMushafSurah(st.num, {fromPopstate:true});
+    if(st.mode === 'juz'){ openMushafJuz(st.num, {fromPopstate:true}); }
+    else if(st.mode === 'page'){ openMushafPage(st.num, {fromPopstate:true}); }
+    else { openMushafSurah(st.num, {fromPopstate:true}); }
   }else if(st.route === 'tafsirsurah' && st.num){
     openTafsirSurah(st.num, {fromPopstate:true});
   }else{
@@ -2573,7 +2627,15 @@ function renderBookmarksList(){
   });
 }
 
-/* ---------- মুদ্রিত কুরআন (Arabic-only, বুকমার্ক-যোগ্য) ---------- */
+/* ---------- মুদ্রিত কুরআন (Arabic-only, বুকমার্ক-যোগ্য): সূরা/পারা/পৃষ্ঠা ---------- */
+
+// প্রতিটি পারার শুরুর সূরা:আয়াত — এটা সর্বজনস্বীকৃত/স্থির বিভাজন, তাই এডিশন/API-নির্ভর নয়
+var JUZ_START = [
+  [1,1],[2,142],[2,253],[3,93],[4,24],[4,148],[5,82],[6,111],[7,88],[8,41],
+  [9,93],[11,6],[12,53],[15,1],[17,1],[18,75],[21,1],[23,1],[25,21],[27,56],
+  [29,46],[33,31],[36,28],[39,32],[41,47],[46,1],[51,31],[58,1],[67,1],[78,1]
+];
+
 function loadMushafSurahList(){
   window._mushafListLoaded = true;
   ensureSurahMeta(function(list){
@@ -2582,6 +2644,41 @@ function loadMushafSurahList(){
   });
   bindSurahSearch('mushafSearch', 'mushafSurahList', function(num){ openMushafSurah(num); });
 }
+
+function renderMushafJuzGrid(){
+  window._mushafJuzGridBuilt = true;
+  var html = '';
+  for(var j=1; j<=30; j++){
+    var start = JUZ_START[j-1];
+    var surahName = BN_SURAH_NAMES[start[0]-1] || '';
+    html += '<div class="juz-card" data-juz="'+j+'">'+
+              '<div class="jc-num">পারা '+toBn(j)+'</div>'+
+              '<div class="jc-sub">শুরু: '+surahName+' '+toBn(start[0])+':'+toBn(start[1])+'</div>'+
+            '</div>';
+  }
+  document.getElementById('mushafJuzGrid').innerHTML = html;
+  document.querySelectorAll('#mushafJuzGrid .juz-card').forEach(function(el){
+    el.addEventListener('click', function(){ openMushafJuz(parseInt(el.getAttribute('data-juz'),10)); });
+  });
+}
+
+function setMushafMode(mode){
+  window._mushafActiveMode = mode;
+  document.querySelectorAll('#mushafModeSeg button').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-mode')===mode);
+  });
+  document.getElementById('mushafModeSurah').style.display = mode==='surah' ? '' : 'none';
+  document.getElementById('mushafModeJuz').style.display = mode==='juz' ? '' : 'none';
+  document.getElementById('mushafModePage').style.display = mode==='page' ? '' : 'none';
+}
+document.querySelectorAll('#mushafModeSeg button').forEach(function(btn){
+  btn.addEventListener('click', function(){ setMushafMode(btn.getAttribute('data-mode')); });
+});
+document.getElementById('mushafPageGoBtn').addEventListener('click', function(){
+  var n = parseInt(document.getElementById('mushafPageInput').value, 10);
+  if(!n || n<1 || n>604){ qrToast('১-৬০৪ এর মধ্যে সঠিক পৃষ্ঠা নম্বর দিন'); return; }
+  openMushafPage(n);
+});
 
 function loadMushafData(cb){
   if(MUSHAF_DATA){ cb(); return; }
@@ -2598,58 +2695,167 @@ function stripPuaGlyphs(s){
   return (s||'').replace(/[\uE000-\uF8FF]/g, '').replace(/[ \t]+$/,'');
 }
 
+// পারা/পৃষ্ঠা অনুযায়ী কোন কোন আয়াত পড়তে হবে সেই ম্যাপিং শুধু একবার আনা হয় ও ক্যাশে রাখা
+// হয় (আমরা টেক্সট নিজেদের quran-arabic.json থেকেই ব্যবহার করি — এখান থেকে শুধু
+// সূরা:আয়াতের ক্রম/সীমানা জানা হয়, তাই ফন্ট/ভিজ্যুয়াল ধারাবাহিক থাকে)
+var MUSHAF_RANGE_CACHE = {};
+function fetchMushafRange(type, num, cb){
+  var key = type+'-'+num;
+  if(MUSHAF_RANGE_CACHE[key]){ cb(MUSHAF_RANGE_CACHE[key]); return; }
+  fetch('https://api.alquran.cloud/v1/'+type+'/'+num+'/quran-uthmani').then(function(r){return r.json();}).then(function(data){
+    if(!data || data.code !== 200 || !data.data || !data.data.ayahs){ cb(null); return; }
+    var list = data.data.ayahs.map(function(a){ return {surah:a.surah.number, ayah:a.numberInSurah}; });
+    MUSHAF_RANGE_CACHE[key] = list;
+    cb(list);
+  }).catch(function(){ cb(null); });
+}
+
+function mushafBookmarkBtn(surah, ayah, bmSet){
+  var marked = (bmSet[surah] && bmSet[surah][ayah]) ? ' bm-on' : '';
+  return ' <button class="mushaf-ayah-num'+marked+'" data-surah="'+surah+'" data-ayah="'+ayah+'">'+toArabicIndicNum(ayah)+'</button> ';
+}
+
+// entries: [{surah, ayah}, ...] — একটানা তিলাওয়াতের ক্রমে; নতুন সূরা শুরু হলেই
+// শিরোনাম+বিসমিল্লাহ বসানো হয় (সূরা ৯ ছাড়া, এবং যদি সূরার একদম ১ নং আয়াত থেকে
+// শুরু হয় — মাঝপথ থেকে কোনো পৃষ্ঠা শুরু হলে আবার বিসমিল্লাহ বসবে না)
+function renderMushafFlow(entries, opts){
+  opts = opts || {};
+  if(!entries || !entries.length){
+    document.getElementById('mushafText').innerHTML = '<div class="err-box">আয়াত লোড করা যায়নি।</div>';
+    return;
+  }
+  var bmSet = {};
+  loadBookmarks().forEach(function(b){ if(!bmSet[b.surah]) bmSet[b.surah]={}; bmSet[b.surah][b.ayah]=true; });
+
+  var html = '<div class="mushaf-page">';
+  var lastSurah = null;
+  var flow = '';
+  entries.forEach(function(e){
+    if(e.surah !== lastSurah){
+      if(flow){ html += '<div class="mushaf-flow ar" dir="rtl">'+flow+'</div>'; flow=''; }
+      html += '<div class="mushaf-surah-head">'+toBn(e.surah)+'. '+(BN_SURAH_NAMES[e.surah-1]||'সূরা')+'</div>';
+      if(e.surah !== 9 && e.ayah === 1){
+        html += '<div class="mushaf-bismillah ar">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ</div>';
+      }
+      lastSurah = e.surah;
+    }
+    var text = MUSHAF_DATA[e.surah+':'+e.ayah];
+    if(text) flow += text + mushafBookmarkBtn(e.surah, e.ayah, bmSet);
+  });
+  if(flow){ html += '<div class="mushaf-flow ar" dir="rtl">'+flow+'</div>'; }
+  html += '</div>';
+  document.getElementById('mushafText').innerHTML = html;
+
+  document.querySelectorAll('#mushafText .mushaf-ayah-num').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var s = parseInt(btn.getAttribute('data-surah'),10);
+      var a = parseInt(btn.getAttribute('data-ayah'),10);
+      var added = toggleBookmark(s, a);
+      btn.classList.toggle('bm-on', added);
+      qrToast(added ? ('আয়াত '+toBn(a)+' বুকমার্ক করা হয়েছে') : 'বুকমার্ক সরানো হয়েছে');
+    });
+  });
+  if(opts.jumpSurah && opts.jumpAyah){
+    var target = document.querySelector('#mushafText .mushaf-ayah-num[data-surah="'+opts.jumpSurah+'"][data-ayah="'+opts.jumpAyah+'"]');
+    if(target){ setTimeout(function(){ target.scrollIntoView({block:'center'}); }, 60); return; }
+  }
+  document.getElementById('contentSheet').scrollTop = 0;
+}
+
 function openMushafSurah(num, opts){
   opts = opts || {};
   num = Math.max(1, Math.min(114, num));
+  window._currentMushafMode = 'surah';
   window._currentMushafSurah = num;
   go('mushafread', {skipHistory:true});
   if(!opts.fromPopstate){
-    history.pushState({route:'mushafread', num:num}, '', '#mushafread-'+num);
+    history.pushState({route:'mushafread', mode:'surah', num:num}, '', '#mushafread-'+num);
   }
   document.getElementById('mushafHeadTitle').textContent = toBn(num)+'. '+(BN_SURAH_NAMES[num-1]||'সূরা');
+  document.getElementById('mushafPageMeta').textContent = '';
   document.getElementById('mushafText').innerHTML = '<div class="loading">আয়াত লোড হচ্ছে...</div>';
   loadMushafData(function(){
     if(!MUSHAF_DATA){
       document.getElementById('mushafText').innerHTML = '<div class="err-box">মুসহাফ ডেটা লোড করা যায়নি।</div>';
       return;
     }
-    var bmSet = {};
-    loadBookmarks().forEach(function(b){ if(b.surah===num) bmSet[b.ayah] = true; });
-    var flow = '';
+    var entries = [];
     var ayahNum = 1;
-    while(MUSHAF_DATA[num+':'+ayahNum]){
-      var marked = bmSet[ayahNum] ? ' bm-on' : '';
-      flow += MUSHAF_DATA[num+':'+ayahNum] + ' <button class="mushaf-ayah-num'+marked+'" data-ayah="'+ayahNum+'">'+toArabicIndicNum(ayahNum)+'</button> ';
-      ayahNum++;
-    }
-    var html = '<div class="mushaf-page">';
-    if(num !== 1 && num !== 9){
-      html += '<div class="mushaf-bismillah ar">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ</div>';
-    }
-    html += '<div class="mushaf-flow ar" dir="rtl">'+flow+'</div></div>';
-    document.getElementById('mushafText').innerHTML = html;
-    document.querySelectorAll('#mushafText .mushaf-ayah-num').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var ayah = parseInt(btn.getAttribute('data-ayah'),10);
-        var added = toggleBookmark(num, ayah);
-        btn.classList.toggle('bm-on', added);
-        qrToast(added ? ('আয়াত '+toBn(ayah)+' বুকমার্ক করা হয়েছে') : 'বুকমার্ক সরানো হয়েছে');
-      });
-    });
-    if(opts.jumpAyah){
-      var target = document.querySelector('#mushafText .mushaf-ayah-num[data-ayah="'+opts.jumpAyah+'"]');
-      if(target){ setTimeout(function(){ target.scrollIntoView({block:'center'}); }, 60); }
-    }else{
-      document.getElementById('contentSheet').scrollTop = 0;
-    }
+    while(MUSHAF_DATA[num+':'+ayahNum]){ entries.push({surah:num, ayah:ayahNum}); ayahNum++; }
+    renderMushafFlow(entries, {jumpSurah: opts.jumpAyah?num:null, jumpAyah: opts.jumpAyah});
   });
 }
+
+function openMushafJuz(num, opts){
+  opts = opts || {};
+  num = Math.max(1, Math.min(30, num));
+  window._currentMushafMode = 'juz';
+  window._currentMushafSurah = num; // prev/next বাটনের জন্য পুনর্ব্যবহার
+  go('mushafread', {skipHistory:true});
+  if(!opts.fromPopstate){
+    history.pushState({route:'mushafread', mode:'juz', num:num}, '', '#mushafread-juz-'+num);
+  }
+  document.getElementById('mushafHeadTitle').textContent = 'পারা '+toBn(num);
+  document.getElementById('mushafPageMeta').textContent = '';
+  document.getElementById('mushafText').innerHTML = '<div class="loading">আয়াত লোড হচ্ছে...</div>';
+  loadMushafData(function(){
+    if(!MUSHAF_DATA){
+      document.getElementById('mushafText').innerHTML = '<div class="err-box">মুসহাফ ডেটা লোড করা যায়নি।</div>';
+      return;
+    }
+    fetchMushafRange('juz', num, function(list){
+      if(!list){
+        document.getElementById('mushafText').innerHTML = '<div class="err-box">পারার আয়াত-তালিকা আনা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।</div>';
+        return;
+      }
+      renderMushafFlow(list);
+    });
+  });
+}
+
+function openMushafPage(num, opts){
+  opts = opts || {};
+  num = Math.max(1, Math.min(604, num));
+  window._currentMushafMode = 'page';
+  window._currentMushafSurah = num; // prev/next বাটনের জন্য পুনর্ব্যবহার
+  go('mushafread', {skipHistory:true});
+  if(!opts.fromPopstate){
+    history.pushState({route:'mushafread', mode:'page', num:num}, '', '#mushafread-page-'+num);
+  }
+  document.getElementById('mushafHeadTitle').textContent = 'পৃষ্ঠা '+toBn(num);
+  document.getElementById('mushafPageMeta').textContent = 'মুসহাফ পৃষ্ঠা '+toBn(num)+' / ৬০৪';
+  document.getElementById('mushafText').innerHTML = '<div class="loading">আয়াত লোড হচ্ছে...</div>';
+  loadMushafData(function(){
+    if(!MUSHAF_DATA){
+      document.getElementById('mushafText').innerHTML = '<div class="err-box">মুসহাফ ডেটা লোড করা যায়নি।</div>';
+      return;
+    }
+    fetchMushafRange('page', num, function(list){
+      if(!list){
+        document.getElementById('mushafText').innerHTML = '<div class="err-box">পৃষ্ঠার আয়াত-তালিকা আনা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।</div>';
+        return;
+      }
+      renderMushafFlow(list);
+    });
+  });
+}
+
 document.getElementById('mushafPrevBtn').addEventListener('click', function(){
-  if(window._currentMushafSurah > 1) openMushafSurah(window._currentMushafSurah - 1);
+  var mode = window._currentMushafMode || 'surah';
+  var cur = window._currentMushafSurah;
+  if(mode==='juz'){ if(cur>1) openMushafJuz(cur-1); }
+  else if(mode==='page'){ if(cur>1) openMushafPage(cur-1); }
+  else { if(cur>1) openMushafSurah(cur-1); }
 });
 document.getElementById('mushafNextBtn').addEventListener('click', function(){
-  if(window._currentMushafSurah < 114) openMushafSurah(window._currentMushafSurah + 1);
+  var mode = window._currentMushafMode || 'surah';
+  var cur = window._currentMushafSurah;
+  if(mode==='juz'){ if(cur<30) openMushafJuz(cur+1); }
+  else if(mode==='page'){ if(cur<604) openMushafPage(cur+1); }
+  else { if(cur<114) openMushafSurah(cur+1); }
 });
+
+
 
 /* ---------- তাফসীর ---------- */
 function loadTafsirSurahList(){
@@ -2880,9 +3086,26 @@ function duaHighlight(text, q){
     return text.replace(re, '<mark>$1</mark>');
   }catch(e){ return text; }
 }
+// দৈনন্দিন জীবনের স্বাভাবিক ক্রম অনুযায়ী বিষয়ভিত্তিক সিরিয়াল (এলোমেলো তালিকার বদলে) —
+// এই তালিকায় নেই এমন কোনো বিষয় থাকলে সেটা শেষে যোগ হবে।
+var DUA_CAT_ORDER = [
+  'ঘুম ও জাগরণ','টয়লেট','ওজু ও পবিত্রতা','মসজিদ ও নামাজ','সকাল-সন্ধ্যা','পোশাক','ঘর',
+  'খাদ্য গ্রহণ','পিতা-মাতা','সন্তান','বিয়ে ও দাম্পত্য','অতিথি আপ্যায়ন','প্রতিবেশী ও সমাজ',
+  'মজলিস ও সাক্ষাৎ','হাঁচি ও সাক্ষাৎ','যাতায়াত','আবহাওয়া','বৃষ্টি','নতুন চাঁদ','রোজা ও ইফতার',
+  'হজ্জ ও উমরাহ','যাকাত ও সদকা','কুরআন তিলাওয়াত','কুরআনের দোয়া','জ্ঞান ও কল্যাণ','দৈনন্দিন আদব',
+  'চাকরি ও পরীক্ষা','ব্যবসা ও লেনদেন','ঋণ ও রিযিক','বাজার-হাট','রোগ-ব্যাধি','বিপদ ও দুশ্চিন্তা',
+  'তাওবা ও ক্ষমা প্রার্থনা','রাগ নিয়ন্ত্রণ','ভালো-মন্দ অনুভূতি প্রকাশ','স্বপ্ন','সুরক্ষা'
+];
 function renderDua(activeCat){
   var cats = ['সব'];
   DUAS.forEach(function(d){ if(cats.indexOf(d.cat)===-1) cats.push(d.cat); });
+  // 'সব' সবসময় প্রথমে; বাকিগুলো DUA_CAT_ORDER অনুযায়ী সাজানো, তালিকায় না থাকা বিষয় শেষে
+  var rest = cats.slice(1).sort(function(a,b){
+    var ia = DUA_CAT_ORDER.indexOf(a); if(ia===-1) ia = 999;
+    var ib = DUA_CAT_ORDER.indexOf(b); if(ib===-1) ib = 999;
+    return ia - ib;
+  });
+  cats = ['সব'].concat(rest);
   activeCat = activeCat || 'সব';
   var catHtml = '';
   cats.forEach(function(c){
