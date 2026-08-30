@@ -1,9 +1,12 @@
 /* ==============================================================
-   check-waqt — প্রতি মিনিটে (netlify.toml-এ schedule = "* * * * *")
+   check-waqt — netlify.toml-এ schedule = "* * * * *" অনুযায়ী প্রতি মিনিটে
    Netlify নিজেই এই ফাংশন চালায়। এটা:
      ১) push-subs স্টোরে জমা থাকা সবার লোকেশন/মাযহাব অনুযায়ী গ্রুপ করে
-        Aladhan API থেকে আজকের নামাজের সময় আনে (একই শহরের জন্য একবারই),
-     ২) এখন (বাংলাদেশ সময়, UTC+6) কোনো ওয়াক্ত ঠিক শুরু হচ্ছে কিনা মেলায়,
+        Aladhan API থেকে আজকের নামাজের সময় আনে — প্রতিটা শহরের জন্য দিনে
+        মাত্র একবারই আনা হয় (prayer-times-cache স্টোরে ২৪ ঘণ্টা ক্যাশ করা
+        থাকে), তাই প্রতি মিনিটে চললেও বাইরের API কল বা কম্পিউট সময় বাড়ে না —
+        Netlify ক্রেডিট সাশ্রয়ের জন্য এটা জরুরি,
+     ২) এখন (বাংলাদেশ সময়, UTC+6) কোনো ওয়াক্ত শুরু হচ্ছে কিনা মেলায়,
      ৩) মিললে ও আজকে এই ওয়াক্তের জন্য আগে না পাঠানো হয়ে থাকলে সেই
         ব্যবহারকারীকে Web Push নোটিফিকেশন পাঠায় — অ্যাপ বন্ধ থাকলে বা
         স্ক্রিন অফ থাকলেও এই নোটিফিকেশন আসবে, কারণ এটা ব্রাউজারের
@@ -15,11 +18,12 @@ const webpush = require('web-push');
 
 var BASE_METHOD = 3, BASE_SCHOOL = 0; // index.html-এর সাথে অভিন্ন
 var TUNE = '0,0,0,0,0,0,0,4,0'; // Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Sunset,Isha,Midnight
-// netlify.toml-এ schedule = "*/5 * * * *" — অর্থাৎ এই ফাংশন প্রতি ৫ মিনিটে একবার চলে,
-// তাই "ঠিক এই মুহূর্তে" ম্যাচ করার বদলে গত ৫ মিনিটের জানালার মধ্যে কোনো ওয়াক্ত শুরু
-// হয়েছে কিনা তা মেলানো হয় — নাহলে সঠিক মিনিটে ফাংশন না চললে সেই ওয়াক্তের নোটিফিকেশনই
-// মিস হয়ে যেত। netlify.toml-এর schedule বদলালে এই সংখ্যাটাও একইভাবে বদলে দিন।
-var CHECK_WINDOW_MIN = 5;
+// প্রতি মিনিটে ফাংশন চলে, কিন্তু Netlify-র শিডিউল সামান্য দেরিতে ট্রিগার হতে
+// পারে বলে ২ মিনিটের জানালা রাখা হলো (নিরাপত্তার জন্য), যাতে কোনো মিনিট মিস
+// হয়ে গেলেও পরের রানেই সেই ওয়াক্তের নোটিফিকেশন ঠিকই চলে যায়।
+var CHECK_WINDOW_MIN = 2;
+// একই শহর+মাযহাবের জন্য দিনে একবার আনা সময় কতক্ষণ ক্যাশে থাকবে
+var CACHE_TTL_HOURS = 24;
 
 function pad2(n) { return (n < 10 ? '0' : '') + n; }
 
@@ -45,7 +49,7 @@ async function fetchJson(url) {
 
 // একটি শহরের আজকের ৫ ওয়াক্ত (মিনিট-অফ-ডে) — client-side fetchPrayerTimes()-এর
 // সাথে অভিন্ন লজিক: school=0 বেসলাইন থেকে সব, হানাফি হলে শুধু Asr আলাদা কল দিয়ে override।
-async function fetchCityWaqtMinutes(city, madhab, dateStr) {
+async function fetchCityWaqtMinutesFromApi(city, madhab, dateStr) {
   var base = 'https://api.aladhan.com/v1/timingsByCity/' + dateStr +
     '?city=' + encodeURIComponent(city) + '&country=Bangladesh&method=' + BASE_METHOD +
     '&school=' + BASE_SCHOOL + '&tune=' + TUNE;
@@ -74,6 +78,23 @@ async function fetchCityWaqtMinutes(city, madhab, dateStr) {
   };
 }
 
+// প্রথমে prayer-times-cache স্টোরে আজকের এই শহর+মাযহাবের সময় আছে কিনা দেখে,
+// থাকলে সেটাই ব্যবহার করে (কোনো বাইরের API কল ছাড়াই — দ্রুত ও ক্রেডিট-সাশ্রয়ী)।
+// না থাকলে/মেয়াদ শেষ হলে তখনই Aladhan-এ কল করে ক্যাশে রেখে দেয়।
+async function fetchCityWaqtMinutesCached(cacheStore, city, madhab, dateStr, dedupeKey) {
+  var cacheKey = dedupeKey + '_' + madhab + '_' + city;
+  try {
+    var cached = await cacheStore.get(cacheKey, { type: 'json' });
+    if (cached) return cached;
+  } catch (e) { /* cache miss হলে নিচে নতুন করে আনবে */ }
+
+  var fresh = await fetchCityWaqtMinutesFromApi(city, madhab, dateStr);
+  if (fresh) {
+    try { await cacheStore.setJSON(cacheKey, fresh); } catch (e) { /* ক্যাশ লিখতে না পারলেও কাজ চলবে, শুধু পরের মিনিটেও আবার fetch হবে */ }
+  }
+  return fresh;
+}
+
 exports.handler = async function (event) {
   connectLambda(event);
 
@@ -89,6 +110,7 @@ exports.handler = async function (event) {
 
   var subsStore = getStore('push-subs');
   var sentStore = getStore('push-sent-log');
+  var cacheStore = getStore('prayer-times-cache');
 
   var listResult = await subsStore.list();
   var blobs = (listResult && listResult.blobs) || [];
@@ -97,7 +119,7 @@ exports.handler = async function (event) {
   }
 
   var now = dhakaNow();
-  var timingsCache = {}; // groupKey -> waqt minutes object (or null)
+  var timingsCache = {}; // এই একটা invocation-এর মধ্যে বারবার একই শহর না আনতে (in-memory)
   var sentCount = 0, checkedCount = 0;
 
   for (var i = 0; i < blobs.length; i++) {
@@ -116,10 +138,10 @@ exports.handler = async function (event) {
     if (!(groupKey in timingsCache)) {
       var waqts = null;
       try {
-        waqts = await fetchCityWaqtMinutes(city, madhab, now.dateStrForApi);
+        waqts = await fetchCityWaqtMinutesCached(cacheStore, city, madhab, now.dateStrForApi, now.dedupeKey);
         if (!waqts && rec.upazila) {
           // উপজেলা না মিললে জেলা দিয়ে fallback (client-এর মতোই)
-          waqts = await fetchCityWaqtMinutes(rec.district_en, madhab, now.dateStrForApi);
+          waqts = await fetchCityWaqtMinutesCached(cacheStore, rec.district_en, madhab, now.dateStrForApi, now.dedupeKey);
         }
       } catch (e) {
         waqts = null;
@@ -168,3 +190,4 @@ exports.handler = async function (event) {
     body: JSON.stringify({ checked: checkedCount, sent: sentCount, nowMin: now.nowMin })
   };
 };
+
