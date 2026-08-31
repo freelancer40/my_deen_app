@@ -59,12 +59,13 @@
   /* ---------- home page: fit everything in one screen, no scroll ---------- */
   #page-home{
     display:none; flex-direction:column; justify-content:space-between;
-    height:100vh; height:100dvh; overflow:hidden; padding:0 0 22px;
+    height:100dvh; height:calc(var(--app-vh, 1vh) * 100);
+    overflow-y:auto; overflow-x:hidden; padding:0 0 22px;
   }
 
   /* ---------- top bar ---------- */
   .topbar{padding:16px 16px 4px;}
-  .topbar-row{display:flex; justify-content:space-between; align-items:flex-start;}
+  .topbar-row{display:flex; justify-content:space-between; align-items:center;}
   .greg-date{color:var(--gold); font-weight:700; font-size:1.05rem;}
   .loc-wrap{display:flex; align-items:center; gap:10px;}
   .loc-name{color:#bfe3d2; font-weight:700; font-size:1.05rem;}
@@ -145,18 +146,18 @@
   .p-item.active .p-time{color:var(--text-dim);}
 
   /* ---------- feature grid ---------- */
-  .feature-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:12px 14px 8px;}
+  .feature-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin:12px 10px 8px;}
   .feature-card{
     background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
-    padding:12px 4px 9px; display:flex; flex-direction:column; align-items:center; gap:7px;
+    padding:10px 3px 8px; display:flex; flex-direction:column; align-items:center; gap:6px;
     cursor:pointer; text-align:center;
   }
   .feature-card:active{background:var(--card-2);}
   .feature-card .fi{
-    width:38px;height:38px;border-radius:12px; background:var(--accent-dim);
+    width:34px;height:34px;border-radius:11px; background:var(--accent-dim);
     display:flex;align-items:center;justify-content:center; color:var(--accent);
   }
-  .feature-card .fl{font-size:0.72rem; font-weight:600; color:#e4f3ea; line-height:1.25;}
+  .feature-card .fl{font-size:0.64rem; font-weight:600; color:#e4f3ea; line-height:1.2;}
 
   /* ---------- generic page ---------- */
   .page{padding:16px; display:none;}
@@ -347,6 +348,7 @@
   .juz-card{background:var(--q-card); border:1px solid var(--q-card-line); border-radius:14px; padding:14px; cursor:pointer;}
   .juz-card:active{background:var(--q-tan);}
   .juz-card .jc-num{font-weight:700; color:var(--q-gold-dk); font-size:0.92rem;}
+  .juz-card .jc-name{font-size:0.78rem; color:var(--q-txt); margin-top:2px; font-style:italic;}
   .juz-card .jc-sub{font-size:0.72rem; color:var(--q-txt-dim); margin-top:4px;}
   .page-jump-wrap{padding:0 14px 8px; display:flex; gap:8px;}
   .page-jump-wrap input{
@@ -385,6 +387,7 @@
     padding:10px 18px; border-radius:20px; font-size:0.85rem; z-index:999; opacity:0; pointer-events:none; transition:opacity 0.25s;
   }
   .qr-toast.show{opacity:1;}
+  .qr-toast.qr-toast-top{top:max(18px, env(safe-area-inset-top)); bottom:auto;}
 
   .qr-ayah-card{background:var(--q-card); border:1px solid var(--q-card-line); border-radius:16px; padding:14px 16px; margin-bottom:14px;}
   .qr-ayah-card.playing{box-shadow:0 0 0 2px var(--q-gold);}
@@ -507,6 +510,14 @@
   .dua-search-input::placeholder{color:var(--text-faint);}
   .dua-count{font-size:0.78rem; color:var(--text-faint); margin:2px 2px 10px;}
   .dua-card mark{background:var(--accent); color:#062012; border-radius:3px; padding:0 2px;}
+  .dfav-mark{color:var(--gold); }
+  .dua-card.fav .dtitle{color:var(--gold);}
+  .dua-fav-btn{
+    display:block; width:100%; margin-top:14px; padding:11px; border-radius:var(--radius-sm);
+    border:1px solid var(--line); background:var(--card); color:var(--text-dim);
+    font-family:inherit; font-size:0.85rem; font-weight:700; cursor:pointer;
+  }
+  .dua-fav-btn.active{background:var(--accent-dim); border-color:var(--accent); color:var(--gold);}
 
   /* prayer times page */
   .pt-date-nav{display:flex; align-items:center; justify-content:space-between; background:var(--card); border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px 16px; margin-bottom:14px;}
@@ -559,8 +570,14 @@
     background:var(--bg-1); width:100%; max-width:480px; border-radius:22px 22px 0 0; padding:22px 20px 26px;
     border-top:1px solid var(--line); max-height:88vh; overflow-y:auto;
     -webkit-overflow-scrolling:touch; overscroll-behavior:contain;
-    animation:slideUp .25s ease-out;
+    animation:slideUp .25s ease-out; position:relative;
   }
+  .sheet-close-btn{
+    position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%;
+    background:var(--card); border:1px solid var(--line); color:var(--text-dim);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .sheet-close-btn:active{transform:scale(0.94);}
   @keyframes slideUp{from{transform:translateY(30px); opacity:0;} to{transform:translateY(0); opacity:1;}}
   .content-overlay{align-items:stretch;}
   .content-sheet{
@@ -584,6 +601,10 @@
     padding:12px 14px; color:var(--text); font-family:inherit; font-size:0.9rem;
   }
   .hint{font-size:0.72rem; color:var(--text-faint); margin-top:6px; line-height:1.5;}
+  .district-row{display:flex; align-items:center; gap:8px;}
+  .district-row .sel{width:auto; flex:1;}
+  .loc-detect-btn{width:42px; height:42px; background:transparent; border:none;}
+  .loc-detect-btn.detecting{opacity:0.6; pointer-events:none;}
   .save-btn{
     width:100%; margin-top:22px; padding:14px; border:none; border-radius:var(--radius-sm);
     background:var(--accent); color:#062012; font-weight:700; font-size:0.95rem; cursor:pointer; font-family:inherit;
@@ -593,7 +614,7 @@
   ::-webkit-scrollbar{width:0;height:0;}
   /* ---------- PWA update banner ---------- */
   .update-banner{
-    position:fixed; left:14px; right:14px; bottom:14px; z-index:999;
+    position:fixed; left:14px; right:14px; top:max(14px, env(safe-area-inset-top)); z-index:999;
     background:var(--card-2); border:1px solid var(--line); border-radius:14px;
     padding:12px 14px; display:none; align-items:center; gap:10px;
     box-shadow:0 8px 24px rgba(0,0,0,0.35);
@@ -615,10 +636,7 @@
       <div class="topbar-row">
         <div class="greg-date" id="gregDate">২৩ আগস্ট, ২০২৬</div>
         <div class="loc-wrap">
-          <div class="loc-name" id="locName">ঢাকা</div>
-          <div class="icon-btn" id="btnSettings" title="সেটিংস">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          </div>
+          <div class="loc-name" id="locName">বর্তমান লোকেশন: ঢাকা</div>
         </div>
       </div>
       <div class="sub-date-row">
@@ -685,6 +703,10 @@
       <div class="feature-card" data-route="prayertimes">
         <div class="fi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
         <div class="fl">নামাজের সময়</div>
+      </div>
+      <div class="feature-card" id="btnSettingsCard">
+        <div class="fi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+        <div class="fl">সেটিংস</div>
       </div>
     </div>
   </div>
@@ -787,15 +809,10 @@
       </div>
       <div class="qr-info-card">শুধু তিলাওয়াতের জন্য মুসহাফ মোড <span class="qi-dot"></span> <span class="qi-count">বুকমার্ক-যোগ্য</span></div>
       <div class="qseg" id="mushafModeSeg">
-        <button class="active" data-mode="surah">সূরা</button>
-        <button data-mode="juz">পারা</button>
+        <button class="active" data-mode="juz">পারা</button>
         <button data-mode="page">পৃষ্ঠা</button>
       </div>
-      <div id="mushafModeSurah">
-        <input class="search-box" id="mushafSearch" placeholder="সূরার নাম বা নম্বর দিয়ে খুঁজুন...">
-        <div id="mushafSurahList"><div class="loading">সূরা তালিকা লোড হচ্ছে...</div></div>
-      </div>
-      <div id="mushafModeJuz" style="display:none;">
+      <div id="mushafModeJuz">
         <div class="juz-grid" id="mushafJuzGrid"></div>
       </div>
       <div id="mushafModePage" style="display:none;">
@@ -880,7 +897,7 @@
     <!-- ============ HADITH BOOK LIST ============ -->
     <div class="page" id="page-hadith">
       <div class="page-head">
-        <div class="back-btn" data-back="home">←</div>
+        <div class="back-btn" data-back="home">&lt;</div>
         <h2>হাদিস গ্রন্থসমূহ</h2>
       </div>
       <div id="hadithBookList"></div>
@@ -889,7 +906,7 @@
     <!-- ============ HADITH BOOK DETAIL ============ -->
     <div class="page" id="page-hadithbook">
       <div class="page-head">
-        <div class="back-btn" data-back="hadith">←</div>
+        <div class="back-btn" data-back="hadith">&lt;</div>
         <h2 id="hadithBookTitle">হাদিস</h2>
       </div>
       <div class="filter-row">
@@ -906,21 +923,19 @@
     <!-- ============ DUA LIST ============ -->
     <div class="page" id="page-dua">
       <div class="page-head">
-        <div class="back-btn" data-back="home">←</div>
+        <div class="back-btn" data-back="home">&lt;</div>
         <h2>দোয়া সংকলন</h2>
       </div>
       <div class="dua-search-wrap">
         <input type="text" id="duaSearch" class="dua-search-input" placeholder="দোয়া খুঁজুন (নাম, অর্থ বা বিষয় দিয়ে)..." autocomplete="off">
       </div>
-      <div class="cat-scroll" id="duaCats"></div>
-      <div class="dua-count" id="duaCount"></div>
       <div id="duaList"></div>
     </div>
 
     <!-- ============ নামাজের সময় (PRAYER TIMES) ============ -->
     <div class="page" id="page-prayertimes">
       <div class="page-head">
-        <div class="back-btn" data-back="home">←</div>
+        <div class="back-btn" data-back="home">&lt;</div>
         <h2 style="flex:1">নামাজের সময়</h2>
         <div class="icon-btn" id="btnPtInfo" title="তথ্য">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
@@ -951,7 +966,7 @@
     <!-- ============ সারা বছরের নামাজের সময় (YEARLY TIMES) ============ -->
     <div class="page" id="page-yearlytimes">
       <div class="page-head">
-        <div class="back-btn" data-back="prayertimes">←</div>
+        <div class="back-btn" data-back="prayertimes">&lt;</div>
         <h2 style="flex:1">সারা বছরের নামাজের সময়</h2>
       </div>
 
@@ -972,21 +987,24 @@
 <!-- ============ SETTINGS SHEET ============ -->
 <div class="overlay" id="settingsOverlay">
   <div class="sheet">
+    <button class="sheet-close-btn" id="btnCloseSettings" title="বন্ধ করুন">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
     <h3>সেটিংস</h3>
 
     <div class="field-label">নামাজের সময় গণনার পদ্ধতি (মাযহাব)</div>
     <div class="seg">
       <button id="madhabHanafi" class="active">হানাফি</button>
-      <button id="madhabSalafi">সালাফি (আহলে হাদিস)</button>
+      <button id="madhabSalafi">সালাফি</button>
     </div>
-    <div class="hint">এলাকাভেদে স্থানীয় মসজিদের সময়ের সাথে সামান্য পার্থক্য হতে পারে।</div>
 
-    <div class="field-label">জেলা নির্বাচন করুন</div>
-    <select class="sel" id="districtSel"></select>
-
-    <div class="field-label">উপজেলা (ঐচ্ছিক)</div>
-    <input class="txt-in" id="upazilaInput" placeholder="যেমন: সাভার, টঙ্গী ইত্যাদি (না লিখলে জেলা শহরের সময় দেখাবে)">
-    <div class="hint">উপজেলার নাম ইংরেজিতে লিখলে অবস্থান খুঁজে পাওয়ার সম্ভাবনা বেশি থাকে, যেমন: Savar</div>
+    <div class="field-label">লোকেশন সিলেক্ট করুন</div>
+    <div class="district-row">
+      <select class="sel" id="districtSel"></select>
+      <button class="icon-btn loc-detect-btn" id="btnDetectLocation" title="বর্তমান অবস্থান অটো-শনাক্ত করুন">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><line x1="12" y1="1" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="1" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="23" y2="12"/></svg>
+      </button>
+    </div>
 
     <div class="field-label">ওয়াক্ত শুরু হলে নোটিফিকেশন ও টোন</div>
     <div class="seg">
@@ -1060,8 +1078,8 @@ var HADITH_BOOKS = [
   {slug:'nasai', bn:'সুনানে নাসাঈ', en:"Sunan an-Nasa'i"},
   {slug:'ibnmajah', bn:'সুনানে ইবনে মাজাহ', en:'Sunan Ibn Majah'},
   {slug:'malik', bn:'মুয়াত্তা মালিক', en:'Muwatta Malik'},
-  {slug:'riyadussalihin', bn:'রিয়াদুস সালেহীন', en:'Riyad as-Salihin'},
-  {slug:'mishkat', bn:'মিশকাতুল মাসাবীহ', en:'Mishkat al-Masabih'},
+  {slug:'riyadussalihin', bn:'রিয়াদুস সালেহীন', en:'Riyad as-Salihin', altSource:true},
+  {slug:'mishkat', bn:'মিশকাতুল মাসাবীহ', en:'Mishkat al-Masabih', altSource:true},
   {slug:'nawawi40', bn:'ইমাম নববীর ৪০ হাদিস', en:"An-Nawawi's 40 Hadith"}
 ];
 
@@ -1302,6 +1320,12 @@ var countdownTimer = null;
 var _notifyAudioUnlocked = false;
 function unlockNotifyAudio(){
   if(_notifyAudioUnlocked) return;
+  // ফ্ল্যাগটা সাথে সাথেই সেট করা হয় (async কাজ শুরুর আগেই), যাতে একই ক্লিক/টাচ
+  // ইভেন্টে (যেমন টেস্ট বাটনে) এই ফাংশনটা দ্বিতীয়বার (document-level লিসেনার
+  // থেকে বাবল হয়ে) কল হলে সেটা সাথে সাথে থেমে যায় — নাহলে দুইবার play()/pause()
+  // একসাথে চলায় আসল টোন বাজানো মাঝপথে থেমে যাচ্ছিল (এই কারণেই টেস্ট নোটিফিকেশন
+  // একবার বাজার পর দ্বিতীয়বার বাজছিল না)
+  _notifyAudioUnlocked = true;
   try{
     var el = document.getElementById('notifyAudioEl');
     if(!el) return;
@@ -1312,13 +1336,11 @@ function unlockNotifyAudio(){
         el.pause();
         el.currentTime = 0;
         el.muted = false;
-        _notifyAudioUnlocked = true;
       }).catch(function(){ el.muted = false; });
     } else {
       el.pause();
       el.currentTime = 0;
       el.muted = false;
-      _notifyAudioUnlocked = true;
     }
   }catch(e){}
 }
@@ -1333,6 +1355,17 @@ function playNotifyTone(){
     if(!el) return;
     el.muted = false;
     el.currentTime = 0;
+    // দুইবার বাজানোর জন্য: প্রথমবার শেষ হলে (ended ইভেন্টে) আবার play() করা হয়,
+    // যাতে টোনটা পরপর ২ বার শোনা যায়
+    var playSecond = function(){
+      el.removeEventListener('ended', playSecond);
+      try{
+        el.currentTime = 0;
+        var p2 = el.play();
+        if(p2 && p2.catch) p2.catch(function(){});
+      }catch(e){}
+    };
+    el.addEventListener('ended', playSecond);
     var p = el.play();
     if(p && p.catch) p.catch(function(){});
   }catch(e){}
@@ -1370,11 +1403,31 @@ function syncNotifyPermHint(){
     hint.textContent = '✅ চালু আছে — প্রতিটি নামাজের ওয়াক্ত শুরু হওয়ার মুহূর্তে (অ্যাপ খোলা ও স্ক্রিন অন থাকা অবস্থায়) একটি সিস্টেম নোটিফিকেশন ও শব্দ বাজবে।';
   }
 }
-function showWaqtSystemNotification(title, body){
+function showWaqtSystemNotification(title, body, extra){
   if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  extra = extra || {};
   // silent:true — যাতে ফোনের ডিফল্ট নোটিফিকেশন সাউন্ড না বাজে, শুধু আমাদের কাস্টম
-  // টোনটাই (playNotifyTone) শোনা যায় এবং স্পষ্টভাবে চেনা যায়।
-  var opts = {body: body, icon:'./icon-192.png', badge:'./icon-192.png', vibrate:[200,100,200], tag:'waqt-notify', silent:true};
+  // টোনটাই (playNotifyTone) শোনা যায় এবং স্পষ্টভাবে চেনা যায়। প্রতিটা আলাদা tag
+  // ব্যবহার করা হয় যাতে আগের নোটিফিকেশনকে নিঃশব্দে আপডেট না করে নতুন করে দেখায়
+  // (একই tag + renotify:false হলে ব্রাউজার পুরনোটাই চুপচাপ বদলে দেয়, নতুন করে
+  // popup/শব্দ কিছুই দেখায় না — টেস্ট বাটনে এই কারণেই আগে কিছু বোঝা যাচ্ছিল না)।
+  //
+  // লক্ষ্য করুন: Notification API-তে silent:true থাকলে opts.vibrate নিজে থেকে কাজ
+  // করে না — ব্রাউজার silent হলে ভাইব্রেশনও বন্ধ করে দেয়। তাই এখানে vibrate অপশন
+  // ছাড়াও নিচে navigator.vibrate() দিয়ে সরাসরি আলাদাভাবে ভাইব্রেট করানো হচ্ছে,
+  // যেটা silent ফ্ল্যাগ দ্বারা প্রভাবিত হয় না।
+  var opts = {
+    body: body,
+    icon: './icon-192.png',
+    badge: './icon-192.png',
+    vibrate: [200,100,200],
+    tag: extra.tag || ('waqt-notify-' + Date.now()),
+    renotify: true,
+    silent: extra.silent !== undefined ? extra.silent : true
+  };
+  if(navigator.vibrate){
+    try{ navigator.vibrate([200,100,200]); }catch(e){}
+  }
   if(navigator.serviceWorker && navigator.serviceWorker.ready){
     navigator.serviceWorker.ready.then(function(reg){
       if(reg && reg.showNotification){
@@ -1391,7 +1444,7 @@ function triggerWaqtNotification(waqtName){
   if(settings.notifySound === false) return;
   playNotifyTone();
   ensureNotifyPermission().then(function(){
-    showWaqtSystemNotification('Deen - Islamic Hub', (waqtName || 'ওয়াক্ত') + ' শুরু হয়েছে');
+    showWaqtSystemNotification('Deen - Islamic Hub', (waqtName || 'ওয়াক্ত') + ' শুরু হয়েছে', {tag:'waqt-notify'});
   });
 }
 
@@ -1424,16 +1477,25 @@ function subscribeToPush(){
     });
   }).then(function(sub){
     if(!sub) return;
+    var locInfo = {
+      district_en: settings.district_en,
+      district_bn: settings.district_bn,
+      upazila: settings.upazila,
+      madhab: settings.madhab
+    };
+    // এই তথ্যটা Cache Storage-এ রেখে দেওয়া হচ্ছে যাতে sw.js-এর
+    // pushsubscriptionchange হ্যান্ডলার — যেটা পেজ বন্ধ থাকা অবস্থাতেও চলতে
+    // পারে (ব্রাউজার নিজে থেকে পুরনো subscription বাতিল করলে) — সঠিক
+    // লোকেশন/মাযহাব সহ নিজে থেকেই সার্ভারে re-save করতে পারে।
+    if('caches' in window){
+      caches.open('push-user-info').then(function(cache){
+        cache.put('/push-user-info', new Response(JSON.stringify(locInfo), {headers:{'Content-Type':'application/json'}}));
+      }).catch(function(e){});
+    }
     return fetch('/.netlify/functions/save-subscription', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        subscription: sub.toJSON(),
-        district_en: settings.district_en,
-        district_bn: settings.district_bn,
-        upazila: settings.upazila,
-        madhab: settings.madhab
-      })
+      body: JSON.stringify(Object.assign({subscription: sub.toJSON()}, locInfo))
     });
   }).catch(function(e){ /* সার্ভার/ব্রাউজার সমর্থন না থাকলে চুপচাপ বাদ — ফোরগ্রাউন্ড টোন/নোটিফিকেশন তো কাজ করবেই */ });
 }
@@ -1453,7 +1515,24 @@ function unsubscribeFromPush(){
   }).catch(function(e){});
 }
 
-/* ================= ROUTER ================= */
+// Android-এ সফটওয়্যার নেভিগেশন বার (≡ □ ◁) থাকলে CSS-এর vh/dvh মাঝেমধ্যে
+// ভুল উচ্চতা হিসাব করে — বিশেষত প্রথমবার লোড আর রিফ্রেশের মধ্যে ভিন্ন মান দেয়,
+// যার ফলে #page-home এর কনটেন্ট একটু নিচের দিকে সরে গিয়ে নেভিগেশন বারের আড়ালে
+// ঢাকা পড়ে যেতে পারত (ফিচার বাটনের লেখা "আল-কোরআন", "হাদিস" ইত্যাদি)। এখানে
+// ব্রাউজারের প্রকৃত window.innerHeight থেকে সরাসরি একটা --app-vh ভ্যারিয়েবল
+// বসানো হচ্ছে, যেটা সবসময় প্রকৃত দৃশ্যমান উচ্চতাই প্রতিফলিত করে।
+function setAppVh(){
+  document.documentElement.style.setProperty('--app-vh', (window.innerHeight * 0.01) + 'px');
+}
+setAppVh();
+window.addEventListener('resize', setAppVh);
+window.addEventListener('orientationchange', function(){ setTimeout(setAppVh, 60); });
+// কিছু Android ব্রাউজারে নেভিগেশন বারের প্রকৃত উচ্চতা লোডের একটু পরে চূড়ান্ত হয় —
+// তাই load ইভেন্টের পরও একবার রিক্যালকুলেট করা হচ্ছে (রিফ্রেশ করলে যাতে বাগটা আবার
+// না ফেরে)
+window.addEventListener('load', function(){ setTimeout(setAppVh, 50); });
+window.addEventListener('pageshow', function(){ setTimeout(setAppVh, 50); });
+
 var CONTENT_ROUTES = ['quran','surah','hadith','hadithbook','dua','prayertimes','yearlytimes','mushaf','mushafread','tafsir','tafsirsurah','bookmarks'];
 var QURAN_THEME_ROUTES = ['quran','surah','mushaf','mushafread','tafsir','tafsirsurah','bookmarks'];
 function go(route, opts){
@@ -1476,9 +1555,8 @@ function go(route, opts){
   if(route === 'prayertimes'){ ptDateOffset = 0; loadPrayerTimesPage(); }
   if(route === 'yearlytimes'){ loadYearlyTimes(ytYear); }
   if(route === 'mushaf'){
-    if(!window._mushafListLoaded) loadMushafSurahList();
     if(!window._mushafJuzGridBuilt) renderMushafJuzGrid();
-    setMushafMode(window._mushafActiveMode || 'surah');
+    syncMushafModeUI(window._mushafActiveMode || 'juz');
   }
   if(route === 'tafsir' && !window._tafsirListLoaded) loadTafsirSurahList();
   if(route === 'bookmarks') renderBookmarksList();
@@ -1492,6 +1570,10 @@ document.querySelectorAll('[data-route]').forEach(function(el){
 if(!history.state){ history.replaceState({route:'home'}, '', '#home'); }
 window.addEventListener('popstate', function(e){
   var st = e.state || {route:'home'};
+  // সেটিংস মডাল history-স্ট্যাকের একটা আলাদা লেয়ার — এখানেই এর দৃশ্যমানতা
+  // সবসময় সিঙ্ক করা হয় (খোলা থাকা অবস্থায় ব্যাক চাপলে বন্ধ হয়ে যাবে)
+  document.getElementById('settingsOverlay').classList.toggle('show', st.modal === 'settings');
+  if(st.modal === 'settings') return; // এই এন্ট্রির জন্য বাকি রুট-লজিক চালানোর দরকার নেই
   if(st.route === 'surah' && st.num){
     openSurah(st.num, {fromPopstate:true});
   }else if(st.route === 'mushafread' && st.num){
@@ -1519,7 +1601,7 @@ function updateDateHeader(){
   var now = new Date();
   document.getElementById('gregDate').textContent =
     toBn(now.getDate()) + ' ' + GREG_MONTHS_BN[now.getMonth()] + ', ' + toBn(now.getFullYear());
-  document.getElementById('locName').textContent = settings.district_bn;
+  document.getElementById('locName').textContent = 'বর্তমান লোকেশন: ' + settings.district_bn;
 
   // Bangla calendar (reformed, Poila Boishakh = 14 April)
   var y = now.getFullYear(), m = now.getMonth(), d = now.getDate();
@@ -1540,7 +1622,7 @@ function updateDateHeader(){
     var pyLen = pyLeap ? 366 : 365;
     bDoy = (pyLen - pyNewYearIdx) + doy;
   }
-  var bMonthLens = [31,31,31,31,31,30,30,30,30,30,30, isLeap?31:30];
+  var bMonthLens = [31,31,31,31,31,31,30,30,30,30, isLeap?30:29, 30];
   var bMonth=0, rem=bDoy;
   while(bMonth<11 && rem >= bMonthLens[bMonth]){ rem -= bMonthLens[bMonth]; bMonth++; }
   var bDate = rem+1;
@@ -1749,12 +1831,15 @@ function renderPrayerTimes(){
   document.getElementById('nextTime').innerHTML = dispAtRel(currentSpan.aRel).label + '<small>'+dispAtRel(currentSpan.aRel).ap+'</small>';
 
   /* ---- নিষিদ্ধ (মাকরুহ) সময়ের হিসাব ----
-     - ফজরের পর: ফজর শুরু থেকে সূর্য সম্পূর্ণ ওঠা পর্যন্ত (সূর্যোদয়+বাফার)
+     - সূর্যোদয়ের সময়: সূর্য ওঠা শুরু হওয়া মুহূর্ত থেকে সম্পূর্ণ ওঠা পর্যন্ত (সূর্যোদয়+বাফার) —
+       "নামাজের সময়" পেইজের computeDaySpans() ও নোটিফিকেশনের (check-waqt.js) সংজ্ঞার সাথে হুবহু
+       মিলিয়ে; পুরো ফজর ওয়াক্তকে নিষিদ্ধ ধরার আগের বাগটা এখানে ছিল না, তবে ভুলবশত সূর্যোদয়ের
+       আগেও ১৫ মিনিট বাফার যোগ করা হয়েছিল যা বাকি অংশের সাথে মিলছিল না — সেটাও সরানো হলো।
      - দ্বিপ্রহরে: যোহর শুরুর ঠিক আগ পর্যন্ত (ইসতিওয়া)
      - সূর্যাস্তের আগে: মাগরিব/সূর্যাস্তের ঠিক আগ পর্যন্ত
      Aladhan API আলাদা "যাওয়াল" সময় দেয় না, তাই ছোট বাফার মিনিট দিয়ে আনুমানিক ধরা হয়েছে
      (উপরে SUNRISE_BUFFER_MIN / ZAWAL_BUFFER_MIN / SUNSET_BUFFER_MIN দ্রষ্টব্য)। */
-  var fajrWindow = sunrise ? {start: times[0].mins, end: sunrise.mins + SUNRISE_BUFFER_MIN} : null;
+  var fajrWindow = sunrise ? {start: sunrise.mins, end: sunrise.mins + SUNRISE_BUFFER_MIN} : null;
   var zawalWindow = {start: times[1].mins - ZAWAL_BUFFER_MIN, end: times[1].mins};
   var sunsetWindow = {start: times[3].mins - SUNSET_BUFFER_MIN, end: times[3].mins};
 
@@ -2506,18 +2591,41 @@ var MUSHAF_DATA = null;   // {"সূরা:আয়াত": "আরবি ট�
 var TAFSIR_DATA = null;   // {"সূরা:আয়াত": {text:"বাংলা তাফসীর"}}
 var BOOKMARK_KEY = 'namazApp_quran_bookmarks_v1';
 
-function qrToast(msg){
+// টোস্টের সাথে ছোট্ট একটা "সফল" ইঙ্গিত-টোন — নতুন কোনো অডিও ফাইল ছাড়াই Web
+// Audio API দিয়ে সরাসরি তৈরি করা হয় (হালকা, দ্রুত মিলিয়ে যায়, prayer-time
+// notify-tone.wav-এর থেকে আলাদা যাতে গুলিয়ে না যায়)
+function playToastBeep(){
+  try{
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if(!Ctx) return;
+    var ctx = new Ctx();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.24);
+    osc.onended = function(){ ctx.close(); };
+  }catch(e){}
+}
+function qrToast(msg, opts){
+  opts = opts || {};
   var t = document.getElementById('qrToastEl');
   if(!t){
     t = document.createElement('div');
     t.id = 'qrToastEl';
-    t.className = 'qr-toast';
     document.body.appendChild(t);
   }
+  t.className = 'qr-toast' + (opts.top ? ' qr-toast-top' : '');
   t.textContent = msg;
   t.classList.add('show');
+  if(opts.sound) playToastBeep();
   clearTimeout(window._qrToastTimer);
-  window._qrToastTimer = setTimeout(function(){ t.classList.remove('show'); }, 1600);
+  window._qrToastTimer = setTimeout(function(){ t.classList.remove('show'); }, opts.duration || 1600);
 }
 
 function ensureSurahMeta(cb){
@@ -2636,6 +2744,50 @@ var JUZ_START = [
   [29,46],[33,31],[36,28],[39,32],[41,47],[46,1],[51,31],[58,1],[67,1],[78,1]
 ];
 
+// পারার সনাতন সংক্ষিপ্ত নাম (শুরুর শব্দ অনুযায়ী) — রেফারেন্স অ্যাপের সাথে মিল রেখে
+var JUZ_NAMES = [
+  "Alif Lam Meem","Sayaqoolu","Tilkal Rusul","Lan Tana Loo","Wal Muhsanat",
+  "La Yuhibbullah","Wa Iza Sami'u","Wa Lau Annana","Qalal Malao","Wa A'lamu",
+  "Yatazeroon","Wa Mamin Da'abat","Wa Ma Ubrioo","Rubama","Subhanallazi",
+  "Qal Alam","Aqtaraba","Qadd Aflaha","Wa Qalallazina","Amman Khalaq",
+  "Utlu Ma Oohi","Wa Man Yaqnut","Wa Mali","Faman Azlam","Ilayhi Yuraddu",
+  "Ha Meem","Qala Fama Khatbukum","Qad Sami Allah","Tabarakallazi","Amma"
+];
+
+// পুরো কুরআনের আয়াত-ক্রম (সূরা:আয়াত) একবার তৈরি করে ক্যাশ করা হয় — এটা quran-arabic.json
+// থেকেই বানানো হয়, তাই ইন্টারনেট ছাড়াই পারা/পৃষ্ঠার আয়াত-সীমানা বের করা যায়
+var FULL_AYAH_LIST = null;
+function buildFullAyahList(){
+  if(FULL_AYAH_LIST) return FULL_AYAH_LIST;
+  var list = [];
+  for(var s=1; s<=114; s++){
+    var a=1;
+    while(MUSHAF_DATA[s+':'+a]){ list.push({surah:s, ayah:a}); a++; }
+  }
+  FULL_AYAH_LIST = list;
+  return list;
+}
+function findAyahIndex(list, surah, ayah){
+  for(var i=0;i<list.length;i++){ if(list[i].surah===surah && list[i].ayah===ayah) return i; }
+  return -1;
+}
+// নেটওয়ার্ক ছাড়াই, স্থানীয় JUZ_START দিয়ে পারার আয়াত-তালিকা বের করা
+function localJuzRange(num){
+  var list = buildFullAyahList();
+  var start = JUZ_START[num-1];
+  var startIdx = findAyahIndex(list, start[0], start[1]);
+  if(startIdx < 0) return null;
+  var endIdx;
+  if(num < 30){
+    var nxt = JUZ_START[num];
+    endIdx = findAyahIndex(list, nxt[0], nxt[1]);
+    if(endIdx < 0) endIdx = list.length;
+  } else {
+    endIdx = list.length;
+  }
+  return list.slice(startIdx, endIdx);
+}
+
 function loadMushafSurahList(){
   window._mushafListLoaded = true;
   ensureSurahMeta(function(list){
@@ -2651,8 +2803,10 @@ function renderMushafJuzGrid(){
   for(var j=1; j<=30; j++){
     var start = JUZ_START[j-1];
     var surahName = BN_SURAH_NAMES[start[0]-1] || '';
+    var jname = JUZ_NAMES[j-1] || '';
     html += '<div class="juz-card" data-juz="'+j+'">'+
               '<div class="jc-num">পারা '+toBn(j)+'</div>'+
+              '<div class="jc-name">'+jname+'</div>'+
               '<div class="jc-sub">শুরু: '+surahName+' '+toBn(start[0])+':'+toBn(start[1])+'</div>'+
             '</div>';
   }
@@ -2662,14 +2816,39 @@ function renderMushafJuzGrid(){
   });
 }
 
-function setMushafMode(mode){
+// শেষবার দেখা মুসহাফ পৃষ্ঠা মনে রাখা হয়, যাতে "পৃষ্ঠা" ট্যাবে ঢুকলেই খালি ফর্মের
+// বদলে সাথে সাথে একটা পৃষ্ঠা (শেষ দেখা পৃষ্ঠা, নাহলে পৃষ্ঠা ১) দেখা যায়
+function getLastMushafPage(){
+  try{
+    var v = parseInt(localStorage.getItem('deenMushafLastPage'), 10);
+    if(v>=1 && v<=604) return v;
+  }catch(e){}
+  return 1;
+}
+function setLastMushafPage(n){
+  try{ localStorage.setItem('deenMushafLastPage', String(n)); }catch(e){}
+}
+
+// শুধু ট্যাবের ভিজ্যুয়াল অবস্থা (active ক্লাস + কোন প্যানেল দেখাবে) সিঙ্ক করে —
+// এটা reading পেজ থেকে "মুশাফ" তালিকায় ফিরে আসার সময় ব্যবহার হয়, তাই এখানে
+// openMushafPage() কল করা হয় না (করলে ব্যাক বাটন চাপার সাথে সাথেই আবার
+// reading পেজে ফিরিয়ে নিয়ে যেত — যেটাই আগের বাগ ছিল)
+function syncMushafModeUI(mode){
   window._mushafActiveMode = mode;
   document.querySelectorAll('#mushafModeSeg button').forEach(function(b){
     b.classList.toggle('active', b.getAttribute('data-mode')===mode);
   });
-  document.getElementById('mushafModeSurah').style.display = mode==='surah' ? '' : 'none';
   document.getElementById('mushafModeJuz').style.display = mode==='juz' ? '' : 'none';
   document.getElementById('mushafModePage').style.display = mode==='page' ? '' : 'none';
+  if(mode==='page'){
+    document.getElementById('mushafPageInput').value = getLastMushafPage();
+  }
+}
+// ব্যবহারকারী নিজে ট্যাব ট্যাপ করলে (ইচ্ছাকৃতভাবে মোড বদলালে) ব্যবহার হয় —
+// এখানেই "পৃষ্ঠা" ট্যাবে গেলে সরাসরি সেই পৃষ্ঠাটা খুলে দেখানো হয়
+function setMushafMode(mode){
+  syncMushafModeUI(mode);
+  if(mode==='page') openMushafPage(getLastMushafPage());
 }
 document.querySelectorAll('#mushafModeSeg button').forEach(function(btn){
   btn.addEventListener('click', function(){ setMushafMode(btn.getAttribute('data-mode')); });
@@ -2699,9 +2878,52 @@ function stripPuaGlyphs(s){
 // হয় (আমরা টেক্সট নিজেদের quran-arabic.json থেকেই ব্যবহার করি — এখান থেকে শুধু
 // সূরা:আয়াতের ক্রম/সীমানা জানা হয়, তাই ফন্ট/ভিজ্যুয়াল ধারাবাহিক থাকে)
 var MUSHAF_RANGE_CACHE = {};
+// পৃষ্ঠা অনুযায়ী আয়াত-সীমানার একটি প্রস্তুত (৬০৪ পৃষ্ঠার) ডেটাসেট — পারার মতো এটাও
+// একবার লোড করে ক্যাশে রাখা হয়। আগে প্রতিটি পৃষ্ঠার জন্য alquran.cloud API-তে সরাসরি
+// কল করা হতো, যা এলাকাভেদে ব্লক/ডাউন থাকার কারণে "পৃষ্ঠা" ট্যাব প্রায়ই ফাঁকা দেখাচ্ছিল।
+// এখন একটি স্থিতিশীল, স্ট্যাটিক (GitHub-হোস্টেড) পৃষ্ঠা-ডেটাসেট থেকে একবারে লোড করা হয়,
+// যা সাধারণ API-হোস্টিং সমস্যার শিকার হয় না।
+var MADANI_PAGES_DATA = null;
+var MADANI_PAGES_LOADING = false;
+var MADANI_PAGES_WAITLIST = [];
+function loadMadaniPagesIndex(cb){
+  if(MADANI_PAGES_DATA){ cb(MADANI_PAGES_DATA); return; }
+  MADANI_PAGES_WAITLIST.push(cb);
+  if(MADANI_PAGES_LOADING) return;
+  MADANI_PAGES_LOADING = true;
+  fetch('https://raw.githubusercontent.com/hamzakat/madani-muhsaf-json/main/madani-muhsaf.json').then(function(r){return r.json();}).then(function(d){
+    MADANI_PAGES_DATA = d;
+    MADANI_PAGES_LOADING = false;
+    MADANI_PAGES_WAITLIST.forEach(function(f){ f(d); });
+    MADANI_PAGES_WAITLIST = [];
+  }).catch(function(){
+    MADANI_PAGES_LOADING = false;
+    MADANI_PAGES_WAITLIST.forEach(function(f){ f(null); });
+    MADANI_PAGES_WAITLIST = [];
+  });
+}
 function fetchMushafRange(type, num, cb){
   var key = type+'-'+num;
   if(MUSHAF_RANGE_CACHE[key]){ cb(MUSHAF_RANGE_CACHE[key]); return; }
+  if(type === 'page'){
+    loadMadaniPagesIndex(function(pages){
+      var pageObj = pages && pages[num];
+      if(!pageObj){ cb(null); return; }
+      var list = [];
+      Object.keys(pageObj).forEach(function(k){
+        var surahNum = parseInt(k, 10);
+        if(!surahNum) return; // "juzNumber" ইত্যাদি ফিল্ড বাদ
+        var entry = pageObj[k];
+        (entry && entry.text || []).forEach(function(v){
+          list.push({surah: surahNum, ayah: parseInt(v.verseNumber, 10)});
+        });
+      });
+      if(!list.length){ cb(null); return; }
+      MUSHAF_RANGE_CACHE[key] = list;
+      cb(list);
+    });
+    return;
+  }
   fetch('https://api.alquran.cloud/v1/'+type+'/'+num+'/quran-uthmani').then(function(r){return r.json();}).then(function(data){
     if(!data || data.code !== 200 || !data.data || !data.data.ayahs){ cb(null); return; }
     var list = data.data.ayahs.map(function(a){ return {surah:a.surah.number, ayah:a.numberInSurah}; });
@@ -2734,7 +2956,7 @@ function renderMushafFlow(entries, opts){
     if(e.surah !== lastSurah){
       if(flow){ html += '<div class="mushaf-flow ar" dir="rtl">'+flow+'</div>'; flow=''; }
       html += '<div class="mushaf-surah-head">'+toBn(e.surah)+'. '+(BN_SURAH_NAMES[e.surah-1]||'সূরা')+'</div>';
-      if(e.surah !== 9 && e.ayah === 1){
+      if(e.surah !== 9 && e.surah !== 1 && e.ayah === 1){
         html += '<div class="mushaf-bismillah ar">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ</div>';
       }
       lastSurah = e.surah;
@@ -2803,13 +3025,15 @@ function openMushafJuz(num, opts){
       document.getElementById('mushafText').innerHTML = '<div class="err-box">মুসহাফ ডেটা লোড করা যায়নি।</div>';
       return;
     }
-    fetchMushafRange('juz', num, function(list){
-      if(!list){
-        document.getElementById('mushafText').innerHTML = '<div class="err-box">পারার আয়াত-তালিকা আনা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।</div>';
-        return;
-      }
-      renderMushafFlow(list);
-    });
+    // ইন্টারনেট ছাড়াই স্থানীয়ভাবে পারার আয়াত-তালিকা বের করা হয় (আগে বাহ্যিক
+    // API-র উপর নির্ভরশীল ছিল, যা নেটওয়ার্ক/হোস্টিং কারণে ব্যর্থ হয়ে "পারা" ট্যাব
+    // ফাঁকা দেখাচ্ছিল)
+    var list = localJuzRange(num);
+    if(!list || !list.length){
+      document.getElementById('mushafText').innerHTML = '<div class="err-box">পারার আয়াত-তালিকা তৈরি করা যায়নি।</div>';
+      return;
+    }
+    renderMushafFlow(list);
   });
 }
 
@@ -2818,6 +3042,7 @@ function openMushafPage(num, opts){
   num = Math.max(1, Math.min(604, num));
   window._currentMushafMode = 'page';
   window._currentMushafSurah = num; // prev/next বাটনের জন্য পুনর্ব্যবহার
+  setLastMushafPage(num);
   go('mushafread', {skipHistory:true});
   if(!opts.fromPopstate){
     history.pushState({route:'mushafread', mode:'page', num:num}, '', '#mushafread-page-'+num);
@@ -2875,6 +3100,23 @@ function loadTafsirData(cb){
   }).catch(function(){ cb(null); });
 }
 
+// tafsir.json-এ কিছু আয়াতের (মোট ২২টি) মান সরাসরি টেক্সট না হয়ে অন্য আয়াতের
+// key নির্দেশক পয়েন্টার স্ট্রিং (যেমন "3:3") — কারণ পাশাপাশি আয়াতের তাফসীর
+// মূল উৎসে একত্রে লেখা ছিল। এই ফাংশন পয়েন্টার হলে আসল টেক্সট পর্যন্ত অনুসরণ করে।
+function resolveTafsirText(key){
+  var seen = {};
+  var cur = key;
+  while(TAFSIR_DATA[cur] && !seen[cur]){
+    seen[cur] = true;
+    var t = TAFSIR_DATA[cur].text;
+    if(t && /^\d+:\d+$/.test(t.trim()) && TAFSIR_DATA[t.trim()]){
+      cur = t.trim();
+    }else{
+      return t || 'এই আয়াতের তাফসীর পাওয়া যায়নি।';
+    }
+  }
+  return 'এই আয়াতের তাফসীর পাওয়া যায়নি।';
+}
 function openTafsirSurah(num, opts){
   opts = opts || {};
   num = Math.max(1, Math.min(114, num));
@@ -2897,7 +3139,7 @@ function openTafsirSurah(num, opts){
     var ayahNum = 1;
     while(MUSHAF_DATA[num+':'+ayahNum]){
       var key = num+':'+ayahNum;
-      var tafsirText = (TAFSIR_DATA[key] && TAFSIR_DATA[key].text) || 'এই আয়াতের তাফসীর পাওয়া যায়নি।';
+      var tafsirText = resolveTafsirText(key);
       html += '<div class="tafsir-card" id="tafsir-ayah-'+ayahNum+'">'+
         '<div class="qr-ayah-label" style="margin-bottom:8px;">'+toBn(num)+':'+toBn(ayahNum)+' নং আয়াত</div>'+
         '<div class="tafsir-ar ar">'+MUSHAF_DATA[key]+'</div>'+
@@ -2987,6 +3229,56 @@ function fetchArabicMap(pathSuffix, callback){
 // মেমোরিতে রাখা হয় — যাতে হাদিস নম্বর দিয়ে সরাসরি খোঁজা যায় ও ধাপে ধাপে দেখানো যায়।
 var hadithBookCache = {};
 var HADITH_PAGE_SIZE = 40;
+
+// রিয়াদুস সালেহীন ও মিশকাতুল মাসাবীহ — এই দুটো বই মূল হাদিস-এপিআই (fawazahmed0/hadith-api)-তে
+// নেই (ওই এপিআইতে এই দুটো বই কখনোই ছিল না, নেট সমস্যা না)। তাই এই দুটোর জন্য আলাদা একটা
+// ফ্রি সোর্স (AhmedBaset/hadith-json) ব্যবহার করা হচ্ছে — এখানে শুধু আরবি ও ইংরেজি টেক্সট
+// পাওয়া যায় (বাংলা অনুবাদ নেই)। এই সোর্সের ফাইলনাম নিশ্চিতভাবে যাচাই করা সম্ভব হয়নি,
+// তাই একাধিক সম্ভাব্য নাম ধারাবাহিকভাবে ট্রাই করা হচ্ছে — যেকোনো একটা কাজ করলেই চলবে।
+var ALT_HADITH_BASE = 'https://raw.githubusercontent.com/A7med3bdulBaset/hadith-json/main/db/by_book/other_books/';
+var ALT_HADITH_CANDIDATES = {
+  riyadussalihin: ['RyadSalihin.json', 'riyadussalihin.json', 'RiyadAsSalihin.json', 'riyad_assalihin.json', 'ryadsalihin.json'],
+  mishkat: ['mishkat.json', 'Mishkat.json', 'mishkat_almasabih.json', 'MishkatAlMasabih.json']
+};
+function tryFetchAltBook(candidates, idx, onSuccess, onFail){
+  if(idx >= candidates.length){ onFail(); return; }
+  fetch(ALT_HADITH_BASE + candidates[idx]).then(function(r){
+    if(!r.ok) throw new Error('bad status');
+    return r.json();
+  }).then(function(data){
+    onSuccess(data);
+  }).catch(function(){
+    tryFetchAltBook(candidates, idx+1, onSuccess, onFail);
+  });
+}
+function loadAltHadithBook(slug){
+  var wrap = document.getElementById('hadithContent');
+  tryFetchAltBook(ALT_HADITH_CANDIDATES[slug] || [], 0, function(data){
+    var list = Array.isArray(data) ? data : (data.hadiths || data.data || []);
+    var arMap = {};
+    var hadiths = list.map(function(h){
+      var num = h.id != null ? h.id : h.hadithnumber;
+      var narrator = (h.english && h.english.narrator) ? h.english.narrator + ': ' : '';
+      var text = (h.english && h.english.text) ? (narrator + h.english.text) : (h.text || '');
+      if(h.arabic) arMap[num] = h.arabic;
+      return {hadithnumber: num, text: text, grades: []};
+    }).filter(function(h){ return h.text && h.text.trim().length; });
+    var result = {hadiths: hadiths, edition: 'eng-alt', arMap: arMap};
+    hadithBookCache[slug] = result;
+    window._currentHadithData = result;
+    window._hadithRenderedCount = 0;
+    wrap.innerHTML = '';
+    if(!result.hadiths.length){
+      wrap.innerHTML = '<div class="err-box">কোনো হাদিস পাওয়া যায়নি।</div>';
+      return;
+    }
+    wrap.innerHTML = '<div class="tag-line" style="margin-bottom:10px;">এই বইয়ের বাংলা সংস্করণ এই মুহূর্তে পাওয়া যায়নি, তাই ইংরেজি সংস্করণ দেখানো হচ্ছে।</div>';
+    renderMoreHadiths(HADITH_PAGE_SIZE);
+  }, function(){
+    wrap.innerHTML = '<div class="err-box">এই বইটি এই মুহূর্তে লোড করা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন অথবা কিছুক্ষণ পর আবার চেষ্টা করুন।</div>';
+  });
+}
+
 function loadHadithBook(slug){
   var wrap = document.getElementById('hadithContent');
   document.getElementById('hadithSearchMsg').textContent = '';
@@ -2998,9 +3290,13 @@ function loadHadithBook(slug){
     return;
   }
   wrap.innerHTML = '<div class="loading">হাদিস লোড হচ্ছে...</div>';
+  if(currentBook && currentBook.altSource){
+    loadAltHadithBook(slug);
+    return;
+  }
   tryFetchEdition('', editionCandidates(), 0, function(data, edition){
     fetchArabicMap('', function(arMap){
-      var result = {hadiths: data.hadiths || [], edition: edition, arMap: arMap};
+      var result = {hadiths: (data.hadiths || []).filter(function(h){ return h.text && h.text.trim().length; }), edition: edition, arMap: arMap};
       hadithBookCache[slug] = result;
       window._currentHadithData = result;
       window._hadithRenderedCount = 0;
@@ -3015,7 +3311,22 @@ function loadHadithBook(slug){
       renderMoreHadiths(HADITH_PAGE_SIZE);
     });
   }, function(){
-    wrap.innerHTML = '<div class="err-box">এই বইটি লোড করা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।</div>';
+    wrap.innerHTML = '<div class="err-box">এই বইটি এই মুহূর্তে লোড করা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন অথবা কিছুক্ষণ পর আবার চেষ্টা করুন।</div>';
+  });
+}
+// হাদিস-এপিআই এর "grades" (সহীহ/দ'ঈফ/হাসান ইত্যাদি) শুধুমাত্র ইংরেজিতেই আসে —
+// অনুবাদের কোনো ভাষাভিত্তিক সংস্করণ এপিআই সরবরাহ করে না, তাই পরিচিত পরিভাষাগুলো
+// এখানে বাংলায় রূপান্তর করা হচ্ছে (অপরিচিত শব্দ, যেমন কোনো মুহাদ্দিসের নাম, অপরিবর্তিত থাকবে)।
+var HADITH_GRADE_BN = {
+  sahih:'সহীহ', authentic:'সহীহ', hasan:'হাসান', daif:"দ'ঈফ (দুর্বল)", "da'if":"দ'ঈফ (দুর্বল)",
+  dhaif:"দ'ঈফ (দুর্বল)", weak:'দুর্বল', maudu:'জাল (বানোয়াট)', mawdu:'জাল (বানোয়াট)',
+  fabricated:'জাল (বানোয়াট)', isnad:'সনদ', munkar:'মুনকার', gharib:'গরীব', shadh:'শায'
+};
+function translateHadithGrade(g){
+  if(!g) return g;
+  return g.replace(/[A-Za-z']+/g, function(word){
+    var key = word.toLowerCase().replace(/'/g,'');
+    return HADITH_GRADE_BN[key] || word;
   });
 }
 function hadithCardHtml(h, arMap){
@@ -3024,7 +3335,7 @@ function hadithCardHtml(h, arMap){
     '<div class="hno">হাদিস নং '+toBn(h.hadithnumber)+'</div>'+
     (arText ? ('<details class="ar-toggle"><summary>আরবী মূল টেক্সট দেখুন</summary><div class="ar">'+arText+'</div></details>') : '')+
     '<div class="txt">'+ (h.text||'').replace(/\n/g,'<br>') +'</div>'+
-    (h.grades && h.grades.length ? '<span class="grade">'+h.grades[0].grade+'</span>' : '')+
+    (h.grades && h.grades.length ? '<span class="grade">'+translateHadithGrade(h.grades[0].grade)+'</span>' : '')+
   '</div>';
 }
 function renderMoreHadiths(count){
@@ -3086,8 +3397,9 @@ function duaHighlight(text, q){
     return text.replace(re, '<mark>$1</mark>');
   }catch(e){ return text; }
 }
-// দৈনন্দিন জীবনের স্বাভাবিক ক্রম অনুযায়ী বিষয়ভিত্তিক সিরিয়াল (এলোমেলো তালিকার বদলে) —
-// এই তালিকায় নেই এমন কোনো বিষয় থাকলে সেটা শেষে যোগ হবে।
+// দৈনন্দিন জীবনের স্বাভাবিক ক্রম অনুযায়ী বিষয়ভিত্তিক সিরিয়াল — এখন শুধু প্রতিটি
+// দোয়া কার্ডের ছোট সাবটাইটেলে বিষয়ের নাম দেখাতে ব্যবহৃত হয় (উপরের ফিল্টার বাটন সরিয়ে
+// ফেলা হয়েছে, এখন সরাসরি সম্পূর্ণ তালিকা দেখানো হয়)
 var DUA_CAT_ORDER = [
   'ঘুম ও জাগরণ','টয়লেট','ওজু ও পবিত্রতা','মসজিদ ও নামাজ','সকাল-সন্ধ্যা','পোশাক','ঘর',
   'খাদ্য গ্রহণ','পিতা-মাতা','সন্তান','বিয়ে ও দাম্পত্য','অতিথি আপ্যায়ন','প্রতিবেশী ও সমাজ',
@@ -3096,41 +3408,35 @@ var DUA_CAT_ORDER = [
   'চাকরি ও পরীক্ষা','ব্যবসা ও লেনদেন','ঋণ ও রিযিক','বাজার-হাট','রোগ-ব্যাধি','বিপদ ও দুশ্চিন্তা',
   'তাওবা ও ক্ষমা প্রার্থনা','রাগ নিয়ন্ত্রণ','ভালো-মন্দ অনুভূতি প্রকাশ','স্বপ্ন','সুরক্ষা'
 ];
-function renderDua(activeCat){
-  var cats = ['সব'];
-  DUAS.forEach(function(d){ if(cats.indexOf(d.cat)===-1) cats.push(d.cat); });
-  // 'সব' সবসময় প্রথমে; বাকিগুলো DUA_CAT_ORDER অনুযায়ী সাজানো, তালিকায় না থাকা বিষয় শেষে
-  var rest = cats.slice(1).sort(function(a,b){
-    var ia = DUA_CAT_ORDER.indexOf(a); if(ia===-1) ia = 999;
-    var ib = DUA_CAT_ORDER.indexOf(b); if(ib===-1) ib = 999;
-    return ia - ib;
-  });
-  cats = ['সব'].concat(rest);
-  activeCat = activeCat || 'সব';
-  var catHtml = '';
-  cats.forEach(function(c){
-    catHtml += '<div class="dua-cat-chip'+(c===activeCat?' active':'')+'" data-cat="'+c+'">'+c+'</div>';
-  });
-  document.getElementById('duaCats').innerHTML = catHtml;
-  document.querySelectorAll('.dua-cat-chip').forEach(function(el){
-    el.addEventListener('click', function(){ renderDua(el.getAttribute('data-cat')); });
-  });
 
+// ---- পছন্দের দোয়া (⭐) — localStorage-এ সংরক্ষিত, পছন্দের দোয়া তালিকার সবার উপরে থাকবে ----
+var DUA_FAV_KEY = 'duaFavorites_v1';
+function duaKeyOf(d){ return d.cat + '|' + d.title; }
+function loadDuaFavs(){
+  try{ return JSON.parse(localStorage.getItem(DUA_FAV_KEY)) || {}; }catch(e){ return {}; }
+}
+function toggleDuaFav(key){
+  var favs = loadDuaFavs();
+  if(favs[key]){ delete favs[key]; } else { favs[key] = true; }
+  localStorage.setItem(DUA_FAV_KEY, JSON.stringify(favs));
+  return !!favs[key];
+}
+
+function renderDua(){
   var searchBox = document.getElementById('duaSearch');
   if(searchBox && searchBox.value !== duaSearchQuery){ searchBox.value = duaSearchQuery; }
   if(searchBox && !searchBox._bound){
     searchBox._bound = true;
     searchBox.addEventListener('input', function(){
       duaSearchQuery = this.value.trim();
-      renderDuaList(activeCat);
+      renderDuaList();
     });
   }
-
-  renderDuaList(activeCat);
+  renderDuaList();
 }
 
-function renderDuaList(activeCat){
-  var list = activeCat==='সব' ? DUAS : DUAS.filter(function(d){return d.cat===activeCat;});
+function renderDuaList(){
+  var list = DUAS.slice();
 
   var q = (duaSearchQuery||'').trim();
   if(q){
@@ -3145,17 +3451,25 @@ function renderDuaList(activeCat){
     });
   }
 
-  var countEl = document.getElementById('duaCount');
-  if(countEl){ countEl.textContent = list.length + ' টি দোয়া পাওয়া গেছে'; }
+  // পছন্দের (⭐) দোয়াগুলো সবার উপরে — বাকিগুলো নিজেদের স্বাভাবিক ক্রমেই থাকবে
+  var favs = loadDuaFavs();
+  list = list.map(function(d,i){ return {d:d, origIdx:i}; }).sort(function(a,b){
+    var fa = favs[duaKeyOf(a.d)] ? 1 : 0;
+    var fb = favs[duaKeyOf(b.d)] ? 1 : 0;
+    if(fa !== fb) return fb - fa;
+    return a.origIdx - b.origIdx;
+  }).map(function(x){ return x.d; });
 
   var html = '<div class="dua-list">';
   list.forEach(function(d, i){
-    html += '<div class="dua-card" data-idx="'+i+'">'+
+    var key = duaKeyOf(d);
+    var isFav = !!favs[key];
+    html += '<div class="dua-card'+(isFav?' fav':'')+'" data-key="'+key.replace(/"/g,'&quot;')+'">'+
       '<div class="dhead">'+
         '<div class="dhead-l">'+
           '<div class="dnum">'+(i+1)+'</div>'+
           '<div>'+
-            '<div class="dtitle">'+duaHighlight(d.title, q)+'</div>'+
+            '<div class="dtitle">'+(isFav?'<span class="dfav-mark">★</span> ':'')+duaHighlight(d.title, q)+'</div>'+
             '<div class="dcat-tag">'+duaHighlight(d.cat, q)+'</div>'+
           '</div>'+
         '</div>'+
@@ -3166,6 +3480,9 @@ function renderDuaList(activeCat){
         '<div class="translit">'+duaHighlight(d.translit, q)+'</div>'+
         '<div class="mean">'+duaHighlight(d.bn, q)+'</div>'+
         '<div class="ref">সূত্র: '+duaHighlight(d.ref, q)+'</div>'+
+        '<button class="dua-fav-btn'+(isFav?' active':'')+'" data-key="'+key.replace(/"/g,'&quot;')+'">'+
+          (isFav ? '★ পছন্দের তালিকায় আছে' : '☆ পছন্দে যোগ করুন') +
+        '</button>'+
       '</div></div>'+
     '</div>';
   });
@@ -3174,6 +3491,15 @@ function renderDuaList(activeCat){
   document.querySelectorAll('#duaList .dhead').forEach(function(el){
     el.addEventListener('click', function(){
       el.closest('.dua-card').classList.toggle('open');
+    });
+  });
+  document.querySelectorAll('#duaList .dua-fav-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var key = btn.getAttribute('data-key');
+      var nowFav = toggleDuaFav(key);
+      qrToast(nowFav ? 'পছন্দের তালিকায় যোগ হলো' : 'পছন্দের তালিকা থেকে সরানো হলো');
+      renderDuaList(); // পুনরায় সাজানোর জন্য (পছন্দ হলে উপরে চলে যাবে)
     });
   });
   if(list.length === 1){
@@ -3193,15 +3519,28 @@ function openSettings(){
   document.getElementById('madhabHanafi').classList.toggle('active', settings.madhab!=='salafi');
   document.getElementById('madhabSalafi').classList.toggle('active', settings.madhab==='salafi');
   districtSel.value = settings.district_en;
-  document.getElementById('upazilaInput').value = settings.upazila || '';
   document.getElementById('notifyOn').classList.toggle('active', settings.notifySound !== false);
   document.getElementById('notifyOff').classList.toggle('active', settings.notifySound === false);
   syncNotifyPermHint();
   document.getElementById('settingsOverlay').classList.add('show');
+  // সেটিংস খোলার সময় history-তে একটা এন্ট্রি যোগ করা হচ্ছে, যাতে ফোনের
+  // ব্যাক বাটন/জেসচার চাপলে সরাসরি অ্যাপ থেকে বের না হয়ে আগে সেটিংসটাই বন্ধ হয়
+  history.pushState({modal:'settings'}, '', location.hash || '#home');
 }
-document.getElementById('btnSettings').addEventListener('click', openSettings);
+// সেভ বাটন, ✕ বাটন বা বাইরে ট্যাপ — যেভাবেই সেটিংস বন্ধ হোক না কেন, এই ফাংশন দিয়েই
+// বন্ধ করতে হবে। আমরা যে history এন্ট্রিটা পুশ করেছিলাম সেটাই back() দিয়ে সরিয়ে দেওয়া
+// হয় (popstate-এ overlay লুকানো হয়), যাতে ব্যাক বাটনের হিস্ট্রি স্ট্যাক ঠিক থাকে।
+function closeSettings(){
+  if(history.state && history.state.modal === 'settings'){
+    history.back();
+  }else{
+    document.getElementById('settingsOverlay').classList.remove('show');
+  }
+}
+document.getElementById('btnSettingsCard').addEventListener('click', openSettings);
+document.getElementById('btnCloseSettings').addEventListener('click', closeSettings);
 document.getElementById('settingsOverlay').addEventListener('click', function(e){
-  if(e.target.id==='settingsOverlay') document.getElementById('settingsOverlay').classList.remove('show');
+  if(e.target.id==='settingsOverlay') closeSettings();
 });
 document.getElementById('madhabHanafi').addEventListener('click', function(){
   document.getElementById('madhabHanafi').classList.add('active');
@@ -3223,11 +3562,13 @@ document.getElementById('notifyOff').addEventListener('click', function(){
   unsubscribeFromPush();
 });
 document.getElementById('btnTestNotify').addEventListener('click', function(){
-  unlockNotifyAudio();
   playNotifyTone();
   ensureNotifyPermission().then(function(perm){
     if(perm === 'granted'){
-      showWaqtSystemNotification('Deen - Islamic Hub', 'টেস্ট নোটিফিকেশন — ঠিকঠাক কাজ করছে ✅');
+      // এই টেস্টের জন্য ইচ্ছাকৃতভাবে silent:false — যাতে ফোনের নিজস্ব নোটিফিকেশন
+      // শব্দও বাজে, ফলে বোঝা যাবে সিস্টেম নোটিফিকেশনটা আসলেই দেখানো হচ্ছে
+      // (আসল ওয়াক্ত নোটিফিকেশনে এটা silent থাকবে, শুধু আমাদের কাস্টম টোন বাজবে)।
+      showWaqtSystemNotification('Deen - Islamic Hub', 'টেস্ট নোটিফিকেশন — ঠিকঠাক কাজ করছে ✅', {tag:'waqt-test-'+Date.now(), silent:false});
     }
     syncNotifyPermHint();
   });
@@ -3240,11 +3581,11 @@ document.getElementById('btnSaveSettings').addEventListener('click', function(){
     madhab: madhab,
     district_en: distEn,
     district_bn: distBn,
-    upazila: document.getElementById('upazilaInput').value.trim(),
+    upazila: '',
     notifySound: document.getElementById('notifyOn').classList.contains('active')
   };
   localStorage.setItem(LS_KEY, JSON.stringify(settings));
-  document.getElementById('settingsOverlay').classList.remove('show');
+  closeSettings();
   updateDateHeader();
   ptDateOffset = 0;
   fetchPrayerTimes(); // এর সফল রেসপন্সেই syncPrayerTimesPageIfOpen() পেইজটাকে (খোলা থাকলে) আপডেট করে দেবে
@@ -3254,6 +3595,52 @@ document.getElementById('btnSaveSettings').addEventListener('click', function(){
     subscribeToPush(); // ইতিমধ্যে subscribe করা থাকলে getSubscription() পুরনোটাই ফেরত দেবে, শুধু নতুন লোকেশন দিয়ে সার্ভারে re-save হবে
   }
 });
+
+// 📍 GPS দিয়ে জেলা/উপজেলা অটো-শনাক্ত করা (ম্যানুয়াল ড্রপডাউনের পাশাপাশি, একটা বাড়তি সুবিধা হিসেবে)।
+// ধাপ: navigator.geolocation দিয়ে lat/lng নেওয়া হয়, তারপর OpenStreetMap-এর ফ্রি reverse-geocoding
+// (Nominatim) দিয়ে সেই lat/lng-কে ঠিকানায় রূপান্তর করে আমাদের ৬৪ জেলার তালিকার (DISTRICTS) সাথে
+// মিলিয়ে দেখা হয়। শনাক্ত হলে সাথে সাথে সেভও হয়ে যায় (আলাদা করে "সংরক্ষণ" চাপতে হয় না)।
+function detectLocation(){
+  var btn = document.getElementById('btnDetectLocation');
+  if(!navigator.geolocation){
+    qrToast('লোকেশন আপডেট ব্যর্থ হয়েছে', {top:true});
+    return;
+  }
+  btn.classList.add('detecting');
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var lat = pos.coords.latitude, lon = pos.coords.longitude;
+    var url = 'https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&zoom=14'+
+      '&accept-language=en&lat='+lat+'&lon='+lon;
+    fetch(url).then(function(r){ return r.json(); }).then(function(data){
+      btn.classList.remove('detecting');
+      var addr = data && data.address;
+      if(!addr){ qrToast('লোকেশন আপডেট ব্যর্থ হয়েছে', {top:true}); return; }
+      var values = [];
+      Object.keys(addr).forEach(function(k){ if(typeof addr[k]==='string') values.push(addr[k].toLowerCase()); });
+      var matchedDistrict = null;
+      for(var i=0;i<DISTRICTS.length && !matchedDistrict;i++){
+        var enName = DISTRICTS[i][1].toLowerCase();
+        for(var j=0;j<values.length;j++){
+          if(values[j].indexOf(enName)!==-1){ matchedDistrict = DISTRICTS[i]; break; }
+        }
+      }
+      if(!matchedDistrict){
+        qrToast('লোকেশন আপডেট ব্যর্থ হয়েছে', {top:true});
+        return;
+      }
+      districtSel.value = matchedDistrict[1];
+      qrToast('লোকেশন আপডেট করা হয়েছে', {top:true, sound:true});
+      document.getElementById('btnSaveSettings').click();
+    }).catch(function(){
+      btn.classList.remove('detecting');
+      qrToast('লোকেশন আপডেট ব্যর্থ হয়েছে', {top:true});
+    });
+  }, function(err){
+    btn.classList.remove('detecting');
+    qrToast('লোকেশন আপডেট ব্যর্থ হয়েছে', {top:true});
+  }, {enableHighAccuracy:false, timeout:12000, maximumAge:300000});
+}
+document.getElementById('btnDetectLocation').addEventListener('click', detectLocation);
 
 /* ================= INIT ================= */
 updateDateHeader();
@@ -3299,6 +3686,8 @@ if('serviceWorker' in navigator){
   });
 
   document.getElementById('btnUpdateNow').addEventListener('click', function(){
+    document.getElementById('updateBanner').classList.remove('show');
+    qrToast('আপডেট হচ্ছে...', {top:true, duration:8000});
     navigator.serviceWorker.getRegistration().then(function(reg){
       if(reg && reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
     });
