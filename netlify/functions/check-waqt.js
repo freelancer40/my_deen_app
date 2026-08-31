@@ -18,12 +18,20 @@ const webpush = require('web-push');
 
 var BASE_METHOD = 3, BASE_SCHOOL = 0; // index.html-এর সাথে অভিন্ন
 var TUNE = '0,0,0,0,0,0,0,4,0'; // Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Sunset,Isha,Midnight
+// index.html-এর নিষিদ্ধ (মাকরুহ) সময়ের বাফার মিনিটের সাথে অভিন্ন — client ও server-এর
+// হিসাব মিলিয়ে রাখার জন্য জরুরি (নিচে দেখুন)।
+var SUNRISE_BUFFER_MIN = 15;
+var ZAWAL_BUFFER_MIN = 5;
+var SUNSET_BUFFER_MIN = 15;
 // প্রতি মিনিটে ফাংশন চলে, কিন্তু Netlify-র শিডিউল সামান্য দেরিতে ট্রিগার হতে
 // পারে বলে ২ মিনিটের জানালা রাখা হলো (নিরাপত্তার জন্য), যাতে কোনো মিনিট মিস
 // হয়ে গেলেও পরের রানেই সেই ওয়াক্তের নোটিফিকেশন ঠিকই চলে যায়।
 var CHECK_WINDOW_MIN = 2;
-// একই শহর+মাযহাবের জন্য দিনে একবার আনা সময় কতক্ষণ ক্যাশে থাকবে
-var CACHE_TTL_HOURS = 24;
+// শহর+মাযহাব ভিত্তিক সফল ফলাফল ক্যাশ-key-তেই তারিখ (dedupeKey) জোড়া থাকে,
+// তাই প্রতিদিন এমনিতেই নতুন key তৈরি হয় — আলাদা TTL হিসাব লাগে না।
+// তবে ব্যর্থ (invalid city) রেজাল্ট বারবার একই মিনিটে-মিনিটে রিট্রাই না করতে
+// এই কুলডাউন সময় ব্যবহার করা হয় (নিচে fetchCityWaqtMinutesCached দেখুন)।
+var FAILURE_RETRY_MIN = 15;
 
 function pad2(n) { return (n < 10 ? '0' : '') + n; }
 
@@ -69,13 +77,26 @@ async function fetchCityWaqtMinutesFromApi(city, madhab, dateStr) {
     } catch (e) { /* ব্যর্থ হলে বেসলাইন আসরই থাকবে */ }
   }
 
-  return {
+  var result = {
     'ফজর': parseHHMM(t.Fajr),
     'যোহর': parseHHMM(t.Dhuhr),
     'আসর': asrMin,
     'মাগরিব': parseHHMM(t.Maghrib),
     'এশা': parseHHMM(t.Isha)
   };
+
+  // সূর্যোদয়-ভিত্তিক নিষিদ্ধ (মাকরুহ) সময় ও সালাতুল দুহার শুরু — index.html-এর
+  // computeDaySpans()-এর সাথে অভিন্ন হিসাব, যাতে এই ইভেন্টগুলোর জন্যও push notification যায়
+  // (আগে শুধু ৫ ওয়াক্তের জন্যই পাঠানো হতো, এই সময়গুলো একেবারেই হিসাব করা হতো না)।
+  if (t.Sunrise) {
+    var sunriseMin = parseHHMM(t.Sunrise);
+    result['সূর্যোদয়ের নিষিদ্ধ সময়'] = sunriseMin;
+    result['সালাতুল দুহা'] = sunriseMin + SUNRISE_BUFFER_MIN;
+  }
+  result['দ্বিপ্রহরের নিষিদ্ধ সময়'] = result['যোহর'] - ZAWAL_BUFFER_MIN;
+  result['সূর্যাস্তের নিষিদ্ধ সময়'] = result['মাগরিব'] - SUNSET_BUFFER_MIN;
+
+  return result;
 }
 
 // প্রথমে prayer-times-cache স্টোরে আজকের এই শহর+মাযহাবের সময় আছে কিনা দেখে,
@@ -85,13 +106,25 @@ async function fetchCityWaqtMinutesCached(cacheStore, city, madhab, dateStr, ded
   var cacheKey = dedupeKey + '_' + madhab + '_' + city;
   try {
     var cached = await cacheStore.get(cacheKey, { type: 'json' });
-    if (cached) return cached;
+    if (cached && cached.__failed) {
+      // ভুল/অচেনা শহরের নাম হলে বারবার একই মিনিটে-মিনিটে Aladhan-এ কল না করে
+      // কিছুক্ষণ চুপ থেকে (কুলডাউন) তারপর আবার চেষ্টা করবে।
+      if (Date.now() - cached.failedAt < FAILURE_RETRY_MIN * 60 * 1000) return null;
+    } else if (cached) {
+      return cached;
+    }
   } catch (e) { /* cache miss হলে নিচে নতুন করে আনবে */ }
 
   var fresh = await fetchCityWaqtMinutesFromApi(city, madhab, dateStr);
-  if (fresh) {
-    try { await cacheStore.setJSON(cacheKey, fresh); } catch (e) { /* ক্যাশ লিখতে না পারলেও কাজ চলবে, শুধু পরের মিনিটেও আবার fetch হবে */ }
-  }
+  try {
+    if (fresh) {
+      await cacheStore.setJSON(cacheKey, fresh);
+    } else {
+      // ব্যর্থতাও ক্যাশ করে রাখা হলো, যাতে অচেনা শহরের জন্য প্রতি মিনিটে
+      // অপ্রয়োজনীয় API কল না হয়।
+      await cacheStore.setJSON(cacheKey, { __failed: true, failedAt: Date.now() });
+    }
+  } catch (e) { /* ক্যাশ লিখতে না পারলেও কাজ চলবে, শুধু পরের মিনিটেও আবার fetch হবে */ }
   return fresh;
 }
 
